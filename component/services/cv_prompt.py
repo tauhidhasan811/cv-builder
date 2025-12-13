@@ -16,4 +16,4 @@ def CVPrompt(user_text, user_data):
          'user_text': user_text
     })
 
-    return prompt
+    return prompt.text
