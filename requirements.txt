@@ -1,5 +1,6 @@
 dotenv
 langchain
+pymongo[srv]
 langchain-openai
 fastapi[standard]
 langchain-google-genai
