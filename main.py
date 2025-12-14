@@ -40,6 +40,9 @@ def check_prompt(user_text:str = Form(),
                 'text': str(ex)
             }
         )
+        return response
+    
+    
 @app.post('/api/gen-descrption/')
 def gen_desc(additional_note = Form(),
              user_bio = Form(),
@@ -71,11 +74,10 @@ def gen_desc(additional_note = Form(),
         )
         return response
     
+
 @app.post('/api/gen-cv/')
 async def generate_cv(additional_note, user_data):
     try:
-            
-
         prompt = CVPrompt(additional_note, user_data)
 
         response = model.invoke(prompt).content
