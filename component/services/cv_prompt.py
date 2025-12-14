@@ -17,3 +17,22 @@ def CVPrompt(user_text, user_data):
     })
 
     return prompt.text
+
+
+def DescPrompt(additional_note, user_data, job_desc = None):
+
+    sys_message = SystemMessage(content='You are a professional and expert on english and cv writer. Your task to write description for cv based on the user biography data and job description (if any). And formate and other changes based on additional user instraction')
+    hum_message = HumanMessage(content=f"Additional instraction from user : {additional_note}User Biography data: {user_data}\n\nJob Description: {job_desc}")
+
+    temp = PromptTemplate(
+        template="{sys_message}.\n {hum_message}",
+        input_types=['sys_message', 'hum_message']
+    )
+
+    prompt = temp.invoke(input={
+        'sys_message': sys_message,
+        'hum_message': hum_message
+    }).text
+
+
+    return prompt
