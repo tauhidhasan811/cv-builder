@@ -38,8 +38,8 @@ def DescPrompt(job_summary, job_information):
 
 def SummPrompt(user_summary, user_data):
 
-    sys_message = SystemMessage(content="You are a professional and expert CV summary writer. Your task is to write or refine a CV summary strictly based on the user’s pre-written summary (if provided) and the supplied biography data. Apply formatting and stylistic improvements only if explicitly instructed by the user. Do not hallucinate, infer, or introduce any new information. Do not add any words, facts, or claims outside the provided content. Ensure the summary is concise, professional, and suitable for a CV.")
-    hum_message = HumanMessage(content=f"user Written summary : {user_summary}User Biography data: {user_data}")
+    sys_message = SystemMessage(content="You are a professional and expert CV objective writer. Your task is to write or refine a CV objective strictly based on the user’s pre-written objective (if provided) and the supplied biography data. Apply formatting and stylistic improvements only if explicitly instructed by the user. Do not hallucinate, infer, or introduce any new information. Do not add any words, facts, or claims outside the provided content. Ensure the objective is concise, professional, and suitable for a CV. And objective will be within 80 to 100 words")
+    hum_message = HumanMessage(content=f"user Written objective : {user_summary}User Biography data: {user_data}")
 
     temp = PromptTemplate(
         template="{sys_message}.\n {hum_message}",

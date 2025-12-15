@@ -2,7 +2,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Form
 from fastapi.responses import JSONResponse
 from component.config.gemini_model import LoadGemini
-from component.services.cv_prompt import CVPrompt, DescPrompt
+from component.services.db_service import InsertService
+from component.services.cv_prompt import CVPrompt, DescPrompt, SummPrompt
 
 #prompt = CVPrompt(user_text="Nothing to say", user_data="Name: Tauhid Hasan\nUniversity: AIUB")
 
@@ -13,7 +14,7 @@ load_dotenv()
 
 model = LoadGemini()
 
-
+"""
 @app.post('/api/check-prompt/')
 def check_prompt(user_text:str = Form(),
                  user_data = Form()):
@@ -41,16 +42,13 @@ def check_prompt(user_text:str = Form(),
             }
         )
         return response
-    
-    
-@app.post('/api/gen-descrption/')
-def gen_desc(additional_note = Form(),
-             user_bio = Form(),
-             job_desc= Form(None)):
+    """
+
+@app.post('/api/enhance-desc/')
+def enhance_desc(job_information = Form(),
+             job_summary = Form()):
     try:
-        prompt = DescPrompt(additional_note=additional_note, 
-                          user_data=user_bio,
-                          job_desc=job_desc)
+        prompt = DescPrompt(job_information= job_information, job_summary=job_summary)
         
         response = model.invoke(prompt)
 
@@ -73,9 +71,36 @@ def gen_desc(additional_note = Form(),
             }
         )
         return response
-    
 
-@app.post('/api/gen-cv/')
+
+@app.post('/api/enhance-summ/')
+async def enhance_summary(user_summary = Form(),
+                          user_data = Form()):
+    try:
+        prompt = SummPrompt(user_summary=user_summary, user_data=user_data)
+        print(prompt)
+        response = model.invoke(prompt)
+        message = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'statuscode': 200,
+                'text': response.content
+            }
+        )
+        return message
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'statuscode': 500,
+                'text': str(ex)
+            }
+        )
+        return message
+
+"""@app.post('/api/gen-cv/')
 async def generate_cv(additional_note, user_data):
     try:
         prompt = CVPrompt(additional_note, user_data)
@@ -100,4 +125,4 @@ async def generate_cv(additional_note, user_data):
                 'text': str(ex)
             }
         )
-        return message
+        return message"""
