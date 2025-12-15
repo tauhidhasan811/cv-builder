@@ -19,20 +19,37 @@ def CVPrompt(user_data, additional_note):
     return prompt.text
 
 
-def DescPrompt(additional_note, user_data, job_desc = None):
-
-    sys_message = SystemMessage(content='You are a professional and expert on english and cv writer. Your task to write description for cv based on the user biography data and job description (if any). And formate and other changes based on additional user instraction')
-    hum_message = HumanMessage(content=f"Additional instraction from user : {additional_note}User Biography data: {user_data}\n\nJob Description: {job_desc}")
+def DescPrompt(job_summary, job_information):
+    sys_message = SystemMessage(content="You are an expert and professional CV description writer. Your task is to refine and enhance the user-provided job summary strictly based on the given job experience information. The output will be used directly in a CV. Do not hallucinate, assume, or infer any information. Do not add, remove, or modify facts beyond the provided content. Improve clarity, professionalism, and impact while preserving the original meaning and accuracy.")
+    hum_message = HumanMessage(content=f"Job expreance information: {job_information}\n\nUser written summary: {job_summary}")
 
     temp = PromptTemplate(
         template="{sys_message}.\n {hum_message}",
-        input_types=['sys_message', 'hum_message']
+        input_variables=['sys_message', 'hum_message']
     )
 
     prompt = temp.invoke(input={
-        'sys_message': sys_message,
-        'hum_message': hum_message
+        'sys_message': sys_message.content,
+        'hum_message': hum_message.content
     }).text
+    print('--------------------------------------')
+    print(prompt)
+    return prompt
 
+def SummPrompt(user_summary, user_data):
 
+    sys_message = SystemMessage(content="You are a professional and expert CV summary writer. Your task is to write or refine a CV summary strictly based on the user’s pre-written summary (if provided) and the supplied biography data. Apply formatting and stylistic improvements only if explicitly instructed by the user. Do not hallucinate, infer, or introduce any new information. Do not add any words, facts, or claims outside the provided content. Ensure the summary is concise, professional, and suitable for a CV.")
+    hum_message = HumanMessage(content=f"user Written summary : {user_summary}User Biography data: {user_data}")
+
+    temp = PromptTemplate(
+        template="{sys_message}.\n {hum_message}",
+        input_variables=['sys_message', 'hum_message']
+    )
+
+    prompt = temp.invoke(input={
+        'sys_message': sys_message.content,
+        'hum_message': hum_message.content
+    }).text
+    print('--------------------------------------')
+    print(prompt)
     return prompt
