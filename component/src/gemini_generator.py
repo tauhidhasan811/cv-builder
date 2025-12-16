@@ -66,7 +66,7 @@ def generate_gemini_response(query, formatted_data, session_id:str):
         "content": (
             f"You are a helpful assistant that provides accurate and precise information "
             f"based on the psychometric test result data {formatted_data}. "
-            f"From the given test result data, provide: "
+            f"From the given test result data, provide give response this point only not single other word like here in analysis result or other words: "
             f"1) Recomanded skills based on the psychometric test result."
             f"2) Key strengths (3 points), "
             f"3) Areas for improvement (3 points), "

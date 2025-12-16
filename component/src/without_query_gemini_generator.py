@@ -61,7 +61,8 @@ def generate_gemini_response(formatted_data, session_id: str):
     prompt = (
         "Analyze the following psychometric test results data "
         f"{formatted_input}"
-        " Provide insights on key strengths , areas for improvement, and "
+        "From the given test result data, provide give response this point only not single other word"
+        "Provide insights on key strengths , areas for improvement, and "
         "overall feedback."
     )
     

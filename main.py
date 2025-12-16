@@ -154,11 +154,32 @@ async def enhance_summary(user_summary = Form(),
 
 @app.post("/api/anlz-psychometric/")
 async def check(data: CheckRequest):
-    response = generate_gemini_response(
-        data.user_payload,
-        data.session_id
-    )
-    return response
+
+    try:
+        response = generate_gemini_response(data.user_payload, data.session_id)
+
+        message = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'statuscode': 200,
+                'text': response
+            }
+        )
+        return message
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'statuscode': 500,
+                'text': str(ex)
+            }
+        )
+        return message
+
+
+
 """@app.post('/api/gen-cv/')
 async def generate_cv(additional_note, user_data):
     try:

@@ -43,7 +43,7 @@ def generate_gemini_response(formatted_data, session_id: str):
     prompt = (
         "Analyze the following psychometric test results"
          f"Test data:\n{formatted_input}"
-        " and generate:\n"
+        " and generate provide give response this point only not single other word like here in analysis result or other words and reponse will be in those four points like point nake : text:\n"
         "1) Recomanded skills eatch skill name within 2 word based on the psychometric test result."
         "2) Key strengths in 3 words\n"
         "3) Areas for improvement in 3 words\n"
