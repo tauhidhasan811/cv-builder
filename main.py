@@ -1,3 +1,4 @@
+import os
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from fastapi import FastAPI, Form
@@ -8,10 +9,6 @@ from component.services.db_service import InsertService
 from component.services.coverletter_prompt import CLPrompt
 from component.services.cv_prompt import CVPrompt, DescPrompt, SummPrompt
 from component.src.gemini_without_langchain import generate_gemini_response
-
-#prompt = CVPrompt(user_text="Nothing to say", user_data="Name: Tauhid Hasan\nUniversity: AIUB")
-
-#print(prompt)
 
 app = FastAPI()
 
@@ -178,8 +175,6 @@ async def check(data: CheckRequest):
         )
         return message
 
-
-
 """@app.post('/api/gen-cv/')
 async def generate_cv(additional_note, user_data):
     try:
@@ -206,3 +201,4 @@ async def generate_cv(additional_note, user_data):
             }
         )
         return message"""
+
