@@ -1,27 +1,40 @@
+from openai import OpenAI
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-
 
 load_dotenv()
-# 1. Instantiate the model
-# You can specify the model name and other parameters like temperature (creativity)
-model = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
+"""
+client = OpenAI()
+"""
 
-# 2. Define a prompt template
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are a helpful assistant."),
-    ("human", "{text}")
-])
+"""
+audio_file = open("audio.mp3", "rb")
 
-# 3. Define an output parser to get a string response
-output_parser = StrOutputParser()
+stream = client.audio.transcriptions.create(
+  model="gpt-4o-mini-transcribe", 
+  file=audio_file, 
+  response_format="text",
+  stream=True
+)
 
-# 4. Chain them together
-# This creates a simple translation chain
-chain = prompt | model | output_parser
+for event in stream:
+  print(event)
+"""
+"""
 
-# 5. Invoke the chain
-response = chain.invoke({"text": "Hello world! How are you"})
-print(response)
+model = OpenAI().models
+
+print(model)"""
+
+"""from component.config.audio_model import OpenAIAudio
+
+model = OpenAIAudio()
+audio_path = "audio.mp3"
+
+text = model.ConvertToText(audio_path=audio_path)
+
+print(text)"""
+
+from component.services.mocktest_prompt import MockTestPrompt
+
+prompt = MockTestPrompt(domain_name="Law", num_of_question="10", def_level='hard')
+print(prompt)
