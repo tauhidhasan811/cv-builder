@@ -36,5 +36,6 @@ print(text)"""
 
 from component.services.mocktest_prompt import MockTestPrompt
 
-prompt = MockTestPrompt(domain_name="Law", num_of_question="10", def_level='hard')
+prompt = MockTestPrompt(domain_name="Law", topic_name = 'creminal', 
+                        num_of_question="10", def_level='hard')
 print(prompt)
