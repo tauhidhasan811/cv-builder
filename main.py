@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from component.config.gemini_model import LoadGemini
 from component.services.db_service import InsertService
 from component.services.coverletter_prompt import CLPrompt
+from component.services.mocktest_prompt import MockTestPrompt
 from component.services.cv_prompt import CVPrompt, DescPrompt, SummPrompt
 from component.src.gemini_without_langchain import generate_gemini_response
 
@@ -31,35 +32,6 @@ class CheckRequest(BaseModel):
     user_payload: dict
 
 
-"""
-@app.post('/api/check-prompt/')
-def check_prompt(user_text:str = Form(),
-                 user_data = Form()):
-    try:
-        prompt = CVPrompt(user_text=user_text,
-                          user_data=user_data)
-        response = JSONResponse(
-            status_code=200,
-            content={
-                'status': True,
-                'statuscode': 200,
-                'text': prompt
-            }
-        )
-        print(response)
-        return response
-    
-    except Exception as ex:
-        response = JSONResponse(
-            status_code=500,
-            content={
-                'status': False,
-                'statuscode': 500,
-                'text': str(ex)
-            }
-        )
-        return response
-    """
 
 @app.post('/api/gen-cover-letter/')
 async def generate_cl(job_desc = Form(),
@@ -173,6 +145,37 @@ async def check(data: CheckRequest):
                 'text': str(ex)
             }
         )
+        return message
+
+@app.post("/api/gen-mock-question/")
+async def gen_mock_question(domain_name = Form(),
+                            topic_name = Form(),
+                            num_of_question = Form(),
+                            def_level = Form()):
+    try:
+        prompt = MockTestPrompt(domain_name=domain_name, topic_name = topic_name, 
+                            num_of_question=num_of_question, def_level=def_level)
+        
+        response = prompt
+        message = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'status_code': 200,
+                'text': response
+            })
+        
+        return message
+    except Exception as ex:
+
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'status_code': 500,
+                'text': str(ex)
+            })
+        
         return message
 
 """@app.post('/api/gen-cv/')
