@@ -25,11 +25,16 @@ model = OpenAI().models
 
 print(model)"""
 
-from component.config.audio_model import OpenAIAudio
+"""from component.config.audio_model import OpenAIAudio
 
 model = OpenAIAudio()
 audio_path = "audio.mp3"
 
 text = model.ConvertToText(audio_path=audio_path)
 
-print(text)
+print(text)"""
+
+from component.services.mocktest_prompt import MockTestPrompt
+
+prompt = MockTestPrompt(domain_name="Law", num_of_question="10", def_level='hard')
+print(prompt)
