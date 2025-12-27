@@ -3,6 +3,7 @@ import time
 import json
 import asyncio
 import tempfile
+import requests
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from component.core.clear_data import CleanData
@@ -10,6 +11,8 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Form, File, UploadFile
 from component.config.audio_model import OpenAIAudio
+from component.src.data.data import format_psychometric_data
+from component.src.openai_generator import generate_openai_response, clear_session
 from component.config.openai_model import LoadGPT
 from component.config.gemini_model import LoadGemini
 from component.services.db_service import InsertService
@@ -17,7 +20,6 @@ from component.core.check_valid_json import IsValidJson
 from component.services.prompt_coverletter import CLPrompt
 from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
-from component.src.gemini_without_langchain import generate_gemini_response
 
 app = FastAPI()
 
@@ -38,8 +40,7 @@ audio_model = OpenAIAudio()
 
 
 class CheckRequest(BaseModel):
-    session_id: str
-    user_payload: dict
+    test_id: str
 
 
 
@@ -135,7 +136,24 @@ async def enhance_summary(user_summary = Form(),
 async def check(data: CheckRequest):
 
     try:
-        response = generate_gemini_response(data.user_payload, data.session_id)
+
+        test_id = data.test_id
+        dynamic_api_url = f"https://wasabigaming.vercel.app/api/v1/psychometric-test/{test_id}"
+        api_response = requests.get(dynamic_api_url, timeout=10)
+        api_response.raise_for_status()
+        raw_test_data = api_response.json()
+
+        # Format data for OpenAI
+        formatted_data = format_psychometric_data(raw_test_data)
+        session_id = data.test_id  # Use test_id as session
+
+        # Generate concise psychometric insights
+        response = generate_openai_response(
+            user_message=formatted_data["text"],
+            session_id=session_id
+        )
+
+        clear_session(session_id)
 
         message = JSONResponse(
             status_code=200,
