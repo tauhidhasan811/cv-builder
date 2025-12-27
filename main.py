@@ -1,5 +1,6 @@
 import os
 import time
+import asyncio
 import tempfile
 from dotenv import load_dotenv
 from pydantic import BaseModel
@@ -187,24 +188,26 @@ async def conver_speech_text(audio:UploadFile = File()):
 
         f_name = audio.filename
         #dir = tempfile.mkdtemp()
-
+        audio_model = OpenAIAudio()
         with tempfile.TemporaryDirectory() as dir: 
             audio_path = os.path.join(dir, f_name)
 
             with open(audio_path, 'wb') as file:
                 file.write(await audio.read())
+                #file.write(audio.read())
             print(audio_path)
-            #audio_model = OpenAIAudio()
+            
             #text = audio_model.ConvertToText(audio_path=audio_path)
-            time.sleep(30)
+            text = await asyncio.to_thread(audio_model.ConvertToText, audio_path)
+            #time.sleep(30)
         response =JSONResponse(
             status_code=200,
             content={
                 'status': True,
                 'status_code': 200,
-                'text': audio_path
-            }
-        )
+                'text': text
+            })
+        
         return response
     except Exception as ex:
 
@@ -217,6 +220,9 @@ async def conver_speech_text(audio:UploadFile = File()):
             }
         )
         return response
+
+
+
 
 """@app.post('/api/gen-cv/')
 async def generate_cv(additional_note, user_data):
