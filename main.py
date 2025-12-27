@@ -1,13 +1,16 @@
 import os
 import time
+import json
 import asyncio
 import tempfile
 from dotenv import load_dotenv
 from pydantic import BaseModel
+from component.core.clear_data import CleanData
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Form, File, UploadFile
 from component.config.audio_model import OpenAIAudio
+from component.config.openai_model import LoadGPT
 from component.config.gemini_model import LoadGemini
 from component.services.db_service import InsertService
 from component.core.check_valid_json import IsValidJson
@@ -30,6 +33,7 @@ app.add_middleware(
 load_dotenv()
 
 model = LoadGemini()
+#model = LoadGPT()
 audio_model = OpenAIAudio()
 
 
@@ -153,6 +157,7 @@ async def check(data: CheckRequest):
         )
         return message
 
+
 @app.post("/api/gen-mock-question/")
 async def gen_mock_question(domain_name = Form(),
                             topic_name = Form(),
@@ -162,14 +167,16 @@ async def gen_mock_question(domain_name = Form(),
         prompt = MockQuesPrompt(domain_name=domain_name, topic_name = topic_name, 
                             num_of_question=num_of_question, def_level=def_level)
         
-        questions = model.invoke(prompt)
+        questions = model.invoke(prompt).content
+
+        questions = CleanData(questions)
 
         message = JSONResponse(
             status_code=200,
             content={
                 'status': True,
                 'status_code': 200,
-                'text': questions.content
+                'text': questions
             })
         return message
     except Exception as ex:
@@ -183,6 +190,7 @@ async def gen_mock_question(domain_name = Form(),
             })
         
         return message
+
 
 @app.post("/api/speech-text/")
 async def conver_speech_text(audio:UploadFile = File()):
@@ -222,6 +230,7 @@ async def conver_speech_text(audio:UploadFile = File()):
         )
         return response
 
+
 @app.post("/api/check-answer/")
 async def check_mock_answer(domain_name = Form(),
                             topic_name = Form(),
@@ -234,28 +243,18 @@ async def check_mock_answer(domain_name = Form(),
                             answer=answer)
         
 
-        message = model.invoke(prompt).text
-        check, message = IsValidJson(message)
-        if check: 
-            response = JSONResponse(
-                status_code=200,
-                content={
-                    'status': True,
-                    'status_code': 200,
-                    'text': message
-                }
-            )
-            return response
-        else: 
-            response = JSONResponse(
-                status_code=501,
-                content={
-                    'status': True,
-                    'status_code': 501,
-                    'text': message
-                }
-            )
-            return response
+        message = model.invoke(prompt).content
+        message = CleanData(message)
+
+        response = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'status_code': 200,
+                'text': message
+            }
+        )
+        return response
     except Exception as ex:
         response = JSONResponse(
             status_code=500,
@@ -266,6 +265,7 @@ async def check_mock_answer(domain_name = Form(),
             }
         )
         return response
+
 
 
 """@app.post('/api/gen-cv/')
