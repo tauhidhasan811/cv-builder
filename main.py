@@ -1,9 +1,10 @@
 import os
-from pydantic import BaseModel
 from dotenv import load_dotenv
-from fastapi import FastAPI, Form
-from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from fastapi import FastAPI, Form, File
 from fastapi.responses import JSONResponse
+
+from fastapi.middleware.cors import CORSMiddleware
 from component.config.gemini_model import LoadGemini
 from component.services.db_service import InsertService
 from component.services.coverletter_prompt import CLPrompt
@@ -156,15 +157,15 @@ async def gen_mock_question(domain_name = Form(),
         prompt = MockTestPrompt(domain_name=domain_name, topic_name = topic_name, 
                             num_of_question=num_of_question, def_level=def_level)
         
-        response = prompt
+        questions = model.invoke(prompt)
+
         message = JSONResponse(
             status_code=200,
             content={
                 'status': True,
                 'status_code': 200,
-                'text': response
+                'text': questions.content
             })
-        
         return message
     except Exception as ex:
 
@@ -177,6 +178,8 @@ async def gen_mock_question(domain_name = Form(),
             })
         
         return message
+
+
 
 """@app.post('/api/gen-cv/')
 async def generate_cv(additional_note, user_data):
