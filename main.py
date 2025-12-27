@@ -10,8 +10,9 @@ from fastapi import FastAPI, Form, File, UploadFile
 from component.config.audio_model import OpenAIAudio
 from component.config.gemini_model import LoadGemini
 from component.services.db_service import InsertService
+from component.core.check_valid_json import IsValidJson
 from component.services.prompt_coverletter import CLPrompt
-from component.services.prompt_mocktest import MockTestPrompt
+from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 from component.src.gemini_without_langchain import generate_gemini_response
 
@@ -29,6 +30,7 @@ app.add_middleware(
 load_dotenv()
 
 model = LoadGemini()
+audio_model = OpenAIAudio()
 
 
 class CheckRequest(BaseModel):
@@ -157,7 +159,7 @@ async def gen_mock_question(domain_name = Form(),
                             num_of_question = Form(),
                             def_level = Form()):
     try:
-        prompt = MockTestPrompt(domain_name=domain_name, topic_name = topic_name, 
+        prompt = MockQuesPrompt(domain_name=domain_name, topic_name = topic_name, 
                             num_of_question=num_of_question, def_level=def_level)
         
         questions = model.invoke(prompt)
@@ -188,7 +190,6 @@ async def conver_speech_text(audio:UploadFile = File()):
 
         f_name = audio.filename
         #dir = tempfile.mkdtemp()
-        audio_model = OpenAIAudio()
         with tempfile.TemporaryDirectory() as dir: 
             audio_path = os.path.join(dir, f_name)
 
@@ -221,7 +222,50 @@ async def conver_speech_text(audio:UploadFile = File()):
         )
         return response
 
+@app.post("/api/check-answer/")
+async def check_mock_answer(domain_name = Form(),
+                            topic_name = Form(),
+                            question = Form(),
+                            answer = Form()):
+    try:
+        prompt = MockAnsPrompt(domain_name=domain_name,
+                            topic_name=topic_name,
+                            question=question,
+                            answer=answer)
+        
 
+        message = model.invoke(prompt).text
+        check, message = IsValidJson(message)
+        if check: 
+            response = JSONResponse(
+                status_code=200,
+                content={
+                    'status': True,
+                    'status_code': 200,
+                    'text': message
+                }
+            )
+            return response
+        else: 
+            response = JSONResponse(
+                status_code=501,
+                content={
+                    'status': True,
+                    'status_code': 501,
+                    'text': message
+                }
+            )
+            return response
+    except Exception as ex:
+        response = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'status_code': 500,
+                'text': str(ex)
+            }
+        )
+        return response
 
 
 """@app.post('/api/gen-cv/')
