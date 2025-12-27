@@ -3,17 +3,16 @@ from langchain.messages import SystemMessage, HumanMessage
 
 
 def MockQuesPrompt(domain_name, topic_name, num_of_question, def_level):
-    out_temp = "[{'question': '<question_text>'}]"
+    out_temp = '[{"question": "<question_text>"}]'
 
     sys_message = SystemMessage(
         content=(
-            f"You are an examiner creating a mock test in the domain of {domain_name} and topic {topic_name}. "
-            f"Generate exactly {num_of_question} questions. "
-            f"The difficulty level of all questions must be {def_level}. "
-            f"All questions must be standard, relevant, and strictly limited to the {domain_name} domain and topic {topic_name}."
-            f"Do not include content from outside this domain and do not hallucinate facts. "
-            f"Return ONLY valid list of JSON in the following format, with no extra text:\n"
-            f"{out_temp}"
+            f"You are an examiner creating a mock test in the domain '{domain_name}' and topic '{topic_name}'. "
+            f"Generate exactly {num_of_question} questions of difficulty '{def_level}'. "
+            "All questions must be strictly relevant to this domain and topic, with no hallucinations or extra text. "
+            "Return the result as a valid JSON array of objects, with exactly the following format and using **double quotes**:\n"
+            f"{out_temp}\n"
+            "Do NOT include explanations, numbering, markdown, or any extra text. Only valid JSON array."
         )
     )
 
@@ -56,7 +55,7 @@ def MockQuesPrompt(domain_name, topic_name, num_of_question, def_level):
 
 def MockAnsPrompt(domain_name, topic_name, question, answer):
 
-    out_temp = '{"Result": "CORRECT or WRONG", "Score": "<percentage>%", "Reason": "<short explanation>"}'
+    out_temp = '{"result": "CORRECT or WRONG", "score": "<percentage>%", "correct_answer": "<short explanation>"}'
 
     sys_message = SystemMessage(
         content=(

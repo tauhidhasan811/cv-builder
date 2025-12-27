@@ -40,7 +40,7 @@ prompt = MockTestPrompt(domain_name="Law", topic_name = 'creminal',
                         num_of_question="10", def_level='hard')
 print(prompt)"""
 
-import json
+"""import json
 
 def is_valid_json(response_text):
     try:
@@ -57,6 +57,26 @@ if valid:
     print("Valid JSON:", data)
 else:
     print("Invalid JSON")
+"""
 
+import re
 
+text = r'''
+\[{\"question\": \"Explain the difference between word embeddings and one-hot encoding.\"}\]
+```json
+\bash
+'''
 
+# Step 1: Remove all literal backslashes
+cleaned = text.replace("\\", "")
+
+# Step 2: Remove backticks (` or ``` )
+cleaned = re.sub(r"`{1,3}", "", cleaned)
+
+# Step 3: Remove code language keywords (json, bash, python, etc.)
+cleaned = re.sub(r'\b(json|bash|python)\b', '', cleaned, flags=re.IGNORECASE)
+
+# Step 4: Remove newlines and extra spaces
+cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+
+print(cleaned)
