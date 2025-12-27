@@ -40,7 +40,23 @@ prompt = MockTestPrompt(domain_name="Law", topic_name = 'creminal',
                         num_of_question="10", def_level='hard')
 print(prompt)"""
 
-import os
-import tempfile
+import json
+
+def is_valid_json(response_text):
+    try:
+        parsed = json.loads(response_text)
+        return True, parsed
+    except json.JSONDecodeError:
+        return False, None
+
+# Example usage:
+response = '{"Result": "CORRECT", "Score": "90%", "Reason": "Answer is mostly correct"}'
+
+valid, data = is_valid_json(response)
+if valid:
+    print("Valid JSON:", data)
+else:
+    print("Invalid JSON")
+
 
 
