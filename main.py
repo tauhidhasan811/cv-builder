@@ -10,9 +10,9 @@ from fastapi import FastAPI, Form, File, UploadFile
 from component.config.audio_model import OpenAIAudio
 from component.config.gemini_model import LoadGemini
 from component.services.db_service import InsertService
-from component.services.coverletter_prompt import CLPrompt
-from component.services.mocktest_prompt import MockTestPrompt
-from component.services.cv_prompt import CVPrompt, DescPrompt, SummPrompt
+from component.services.prompt_coverletter import CLPrompt
+from component.services.prompt_mocktest import MockTestPrompt
+from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 from component.src.gemini_without_langchain import generate_gemini_response
 
 app = FastAPI()
