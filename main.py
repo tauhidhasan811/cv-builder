@@ -1,10 +1,12 @@
 import os
+import time
+import tempfile
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from fastapi import FastAPI, Form, File
 from fastapi.responses import JSONResponse
-
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Form, File, UploadFile
+from component.config.audio_model import OpenAIAudio
 from component.config.gemini_model import LoadGemini
 from component.services.db_service import InsertService
 from component.services.coverletter_prompt import CLPrompt
@@ -179,7 +181,42 @@ async def gen_mock_question(domain_name = Form(),
         
         return message
 
+@app.post("/api/speech-text/")
+async def conver_speech_text(audio:UploadFile = File()):
+    try:
 
+        f_name = audio.filename
+        #dir = tempfile.mkdtemp()
+
+        with tempfile.TemporaryDirectory() as dir: 
+            audio_path = os.path.join(dir, f_name)
+
+            with open(audio_path, 'wb') as file:
+                file.write(await audio.read())
+            print(audio_path)
+            #audio_model = OpenAIAudio()
+            #text = audio_model.ConvertToText(audio_path=audio_path)
+            time.sleep(30)
+        response =JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'status_code': 200,
+                'text': audio_path
+            }
+        )
+        return response
+    except Exception as ex:
+
+        response =JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'status_code': 500,
+                'text': str(ex)
+            }
+        )
+        return response
 
 """@app.post('/api/gen-cv/')
 async def generate_cv(additional_note, user_data):

@@ -34,8 +34,13 @@ text = model.ConvertToText(audio_path=audio_path)
 
 print(text)"""
 
-from component.services.mocktest_prompt import MockTestPrompt
+"""from component.services.mocktest_prompt import MockTestPrompt
 
 prompt = MockTestPrompt(domain_name="Law", topic_name = 'creminal', 
                         num_of_question="10", def_level='hard')
-print(prompt)
+print(prompt)"""
+
+import os
+import tempfile
+
+
