@@ -59,7 +59,7 @@ else:
     print("Invalid JSON")
 """
 
-import re
+"""import re
 
 text = r'''
 \[{\"question\": \"Explain the difference between word embeddings and one-hot encoding.\"}\]
@@ -79,4 +79,23 @@ cleaned = re.sub(r'\b(json|bash|python)\b', '', cleaned, flags=re.IGNORECASE)
 # Step 4: Remove newlines and extra spaces
 cleaned = re.sub(r'\s+', ' ', cleaned).strip()
 
-print(cleaned)
+print(cleaned)"""
+
+
+from component.core.job_scrape import scrape_all
+import component.parameters as hparams
+
+BASE_URL = hparams.hparams["BASE_URL"]
+HEADERS = hparams.hparams["HEADERS"]
+
+# Build the dynamic search URL
+START_URL = hparams.build_search_url(search_term="law", location="CM13 3JA")
+
+# Now call the scraper
+jobs = scrape_all(BASE_URL, START_URL, HEADERS)
+print(f"Total jobs scraped: {len(jobs)}")
+
+
+#data = scrape_all(BASE_URL = BASE_URL, START_URL=START_URL, HEADERS=HEADERS)
+print(f"\nTotal jobs scraped: {len(jobs)}")
+print(jobs)

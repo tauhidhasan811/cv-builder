@@ -21,6 +21,12 @@ from component.services.prompt_coverletter import CLPrompt
 from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 
+from component.core.job_scrape import scrape_all
+import component.parameters as hparams
+
+
+
+
 app = FastAPI()
 
 app.add_middleware(
@@ -34,8 +40,8 @@ app.add_middleware(
 
 load_dotenv()
 
-model = LoadGemini()
-#model = LoadGPT()
+#model = LoadGemini()
+model = LoadGPT()
 audio_model = OpenAIAudio()
 
 
@@ -270,6 +276,44 @@ async def check_mock_answer(domain_name = Form(),
                 'status': True,
                 'status_code': 200,
                 'text': message
+            }
+        )
+        return response
+    except Exception as ex:
+        response = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'status_code': 500,
+                'text': str(ex)
+            }
+        )
+        return response
+
+
+@app.post("/api/find-jobs/")
+async def find_jobs(job_title= Form(),
+                    location = Form()):
+    try:
+        BASE_URL = hparams.hparams["BASE_URL"]
+        HEADERS = hparams.hparams["HEADERS"]
+
+        START_URL = hparams.build_search_url(search_term=job_title, 
+                                             location=location)
+
+    
+        jobs = scrape_all(BASE_URL, START_URL, HEADERS)
+        print('-' * 100)
+        print(f"Total jobs scraped: {len(jobs)}")
+        print('-' * 100)
+
+
+        response = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'status_code': 200,
+                'text': jobs
             }
         )
         return response
