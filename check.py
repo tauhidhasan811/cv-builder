@@ -5,7 +5,7 @@ from component.config.db_config import GetDBConnection
 from component.services.db_service import InsertService
 from component.config.gemini_model import LoadGemini
 from component.services.db_service import InsertService
-from component.services.cv_prompt import CVPrompt, DescPrompt, SummPrompt
+from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 
 #prompt = CVPrompt(user_text="Nothing to say", user_data="Name: Tauhid Hasan\nUniversity: AIUB")
 
