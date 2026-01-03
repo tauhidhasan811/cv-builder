@@ -15,7 +15,7 @@ def api_home():
     return jsonify({
         "status": "success",
         "status_code": 200,
-        "message": "API is working"
+        "message": "API is working fine"
     })
 
 
@@ -36,7 +36,7 @@ def api_generate():
         api_response.raise_for_status()
         raw_test_data = api_response.json()
 
-        # Format data for OpenAI
+        # Formating the  data for OpenAI
         formatted_data = format_psychometric_data(raw_test_data)
         session_id = test_id  # Use test_id as session
 
