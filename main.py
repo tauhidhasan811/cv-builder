@@ -14,12 +14,14 @@ from component.config.audio_model import OpenAIAudio
 from component.src.data.data import format_psychometric_data
 from component.src.openai_generator import generate_openai_response, clear_session
 from component.config.openai_model import LoadGPT
-from component.config.gemini_model import LoadGemini
-from component.services.db_service import InsertService
-from component.core.check_valid_json import IsValidJson
+from component.core.video_to_audio import ExtractAudio
+#from component.config.gemini_model import LoadGemini
+#from component.services.db_service import InsertService
+#from component.core.check_valid_json import IsValidJson
+#from component.core.video_to_audio import ExtractAudio
 from component.services.prompt_coverletter import CLPrompt
-from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
-from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
+#from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
+from component.services.prompt_cv_maker import DescPrompt, SummPrompt
 
 from component.core.job_scrape import scrape_all
 import component.parameters as hparams
@@ -182,93 +184,29 @@ async def check(data: CheckRequest):
         return message
 
 
-@app.post("/api/gen-mock-question/")
-async def gen_mock_question(domain_name = Form(),
-                            topic_name = Form(),
-                            num_of_question = Form(),
-                            def_level = Form()):
+
+@app.post("/api/mock-interview/")
+async def check_mock_answer(answer = Form(),
+                            video: UploadFile = File()):
     try:
-        prompt = MockQuesPrompt(domain_name=domain_name, topic_name = topic_name, 
-                            num_of_question=num_of_question, def_level=def_level)
-        
-        questions = model.invoke(prompt).content
+        prompt = ''
+        with tempfile.TemporaryDirectory() as dir:
+            f_name = video.filename
+            a_f_name = f_name.split('.')[0] +'.mp3'
+            path = os.path.join(dir, f_name)
 
-        questions = CleanData(questions)
+            with open(path, 'wb') as file:
+                file.write(await video.read())
+            print(path)
 
-        message = JSONResponse(
-            status_code=200,
-            content={
-                'status': True,
-                'status_code': 200,
-                'text': questions
-            })
-        return message
-    except Exception as ex:
+            aud_pth = os.path.join(dir, a_f_name)
+            response = ExtractAudio(path, aud_pth)
+            message = await asyncio.to_thread(audio_model.ConvertToText, aud_pth)
 
-        message = JSONResponse(
-            status_code=500,
-            content={
-                'status': False,
-                'status_code': 500,
-                'text': str(ex)
-            })
-        
-        return message
+            #time.sleep(90)
 
-
-@app.post("/api/speech-text/")
-async def conver_speech_text(audio:UploadFile = File()):
-    try:
-
-        f_name = audio.filename
-        #dir = tempfile.mkdtemp()
-        with tempfile.TemporaryDirectory() as dir: 
-            audio_path = os.path.join(dir, f_name)
-
-            with open(audio_path, 'wb') as file:
-                file.write(await audio.read())
-                #file.write(audio.read())
-            print(audio_path)
-            
-            #text = audio_model.ConvertToText(audio_path=audio_path)
-            text = await asyncio.to_thread(audio_model.ConvertToText, audio_path)
-            #time.sleep(30)
-        response =JSONResponse(
-            status_code=200,
-            content={
-                'status': True,
-                'status_code': 200,
-                'text': text
-            })
-        
-        return response
-    except Exception as ex:
-
-        response =JSONResponse(
-            status_code=500,
-            content={
-                'status': False,
-                'status_code': 500,
-                'text': str(ex)
-            }
-        )
-        return response
-
-
-@app.post("/api/check-answer/")
-async def check_mock_answer(domain_name = Form(),
-                            topic_name = Form(),
-                            question = Form(),
-                            answer = Form()):
-    try:
-        prompt = MockAnsPrompt(domain_name=domain_name,
-                            topic_name=topic_name,
-                            question=question,
-                            answer=answer)
-        
-
-        message = model.invoke(prompt).content
-        message = CleanData(message)
+        #message = model.invoke(prompt).content
+        #message = CleanData(message)
 
         response = JSONResponse(
             status_code=200,
@@ -328,32 +266,4 @@ async def find_jobs(job_title= Form(),
         )
         return response
 
-
-
-"""@app.post('/api/gen-cv/')
-async def generate_cv(additional_note, user_data):
-    try:
-        prompt = CVPrompt(additional_note, user_data)
-
-        response = model.invoke(prompt).content
-
-        message = JSONResponse(
-            status_code=200,
-            content={
-                'status': True,
-                'statuscode': 200,
-                'text': response
-            }
-        )
-        return message
-    except Exception as ex:
-        message = JSONResponse(
-            status_code=500,
-            content={
-                'status': False,
-                'statuscode': 500,
-                'text': str(ex)
-            }
-        )
-        return message"""
 
