@@ -21,6 +21,7 @@ from component.core.video_to_audio import ExtractAudio
 #from component.core.video_to_audio import ExtractAudio
 from component.services.prompt_coverletter import CLPrompt
 #from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
+from component.services.prompt_mock_test import MokeEvaluatePrompt
 from component.services.prompt_cv_maker import DescPrompt, SummPrompt
 
 from component.core.job_scrape import scrape_all
@@ -187,9 +188,9 @@ async def check(data: CheckRequest):
 
 @app.post("/api/mock-interview/")
 async def check_mock_answer(answer = Form(),
+                            segment = Form(),
                             video: UploadFile = File()):
     try:
-        prompt = ''
         with tempfile.TemporaryDirectory() as dir:
             f_name = video.filename
             a_f_name = f_name.split('.')[0] +'.mp3'
@@ -201,12 +202,14 @@ async def check_mock_answer(answer = Form(),
 
             aud_pth = os.path.join(dir, a_f_name)
             response = ExtractAudio(path, aud_pth)
-            message = await asyncio.to_thread(audio_model.ConvertToText, aud_pth)
+            answer_text = await asyncio.to_thread(audio_model.ConvertToText, aud_pth)
 
+        
             #time.sleep(90)
-
-        #message = model.invoke(prompt).content
-        #message = CleanData(message)
+        
+        prompt = MokeEvaluatePrompt(segment=segment, answer_text=answer_text)
+        message = model.invoke(prompt).content
+        message = CleanData(message)
 
         response = JSONResponse(
             status_code=200,

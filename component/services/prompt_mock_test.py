@@ -93,3 +93,39 @@ def MockAnsPrompt(domain_name, topic_name, question, answer):
 
     return prompt.text
 
+
+def MokeEvaluatePrompt(segment, answer_text):
+
+    prompt = f"""
+        You are an interview evaluator.
+
+        interview Segment: {segment}
+
+        Candidate Answer:
+        {answer_text}
+
+        Evaluate The answer on a scale of 0-100 for each catagory:
+
+        1.Content_Quality 
+        2.Clarity_Structure
+        3.Communication
+        4.Professional_Attitude
+
+        Return ONLY Valid JSON in this format : 
+
+        {{
+        "content_quality": number,
+        "clarirty_structure": number,
+        "communication": number,
+        "professional_attitude": number,
+        "feedback": {{
+            "content_quality": "text",
+            "clarirty_structure": "text",
+            "communication": "text",
+            "professional_attitude": "text",
+        }}
+        }}
+        """
+    
+    return prompt
+
