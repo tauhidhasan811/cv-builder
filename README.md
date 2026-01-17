@@ -1,3 +1,2 @@
 <p align='center'>
-hi
 
