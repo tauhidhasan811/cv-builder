@@ -81,7 +81,7 @@ cleaned = re.sub(r'\s+', ' ', cleaned).strip()
 
 print(cleaned)"""
 
-
+"""
 from component.core.job_scrape import scrape_all
 import component.parameters as hparams
 
@@ -98,4 +98,25 @@ print(f"Total jobs scraped: {len(jobs)}")
 
 #data = scrape_all(BASE_URL = BASE_URL, START_URL=START_URL, HEADERS=HEADERS)
 print(f"\nTotal jobs scraped: {len(jobs)}")
-print(jobs)
+print(jobs)"""
+
+
+### video to audio extract
+import os
+import time
+import moviepy
+import tempfile
+from component.core.video_to_audio import ExtractAudio
+path = 'Download.mp4'
+
+with tempfile.TemporaryDirectory() as dir:
+    f_name = 'output_audio.mp3'
+    pth = os.path.join(dir, f_name)
+    check = ExtractAudio(vdo_path=path, audio_path=pth)
+    print(pth)
+
+    time.sleep(60)
+
+
+
+
