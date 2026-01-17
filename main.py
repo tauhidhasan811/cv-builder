@@ -188,7 +188,6 @@ async def check(data: CheckRequest):
 
 @app.post("/api/mock-interview/")
 async def check_mock_answer(question = Form(),
-                            answer = Form(),
                             segment = Form(),
                             video: UploadFile = File()):
     try:
