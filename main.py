@@ -187,7 +187,8 @@ async def check(data: CheckRequest):
 
 
 @app.post("/api/mock-interview/")
-async def check_mock_answer(answer = Form(),
+async def check_mock_answer(question = Form(),
+                            answer = Form(),
                             segment = Form(),
                             video: UploadFile = File()):
     try:
@@ -207,7 +208,8 @@ async def check_mock_answer(answer = Form(),
         
             #time.sleep(90)
         
-        prompt = MokeEvaluatePrompt(segment=segment, answer_text=answer_text)
+        prompt = MokeEvaluatePrompt(segment=segment, question=question,
+                                    answer=answer_text)
         message = model.invoke(prompt).content
         message = CleanData(message)
 

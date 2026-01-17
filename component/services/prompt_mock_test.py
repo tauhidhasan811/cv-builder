@@ -94,15 +94,16 @@ def MockAnsPrompt(domain_name, topic_name, question, answer):
     return prompt.text
 
 
-def MokeEvaluatePrompt(segment, answer_text):
+def MokeEvaluatePrompt(segment, question, answer):
 
     prompt = f"""
         You are an interview evaluator.
 
         interview Segment: {segment}
 
+        Question: {question}
         Candidate Answer:
-        {answer_text}
+        {answer}
 
         Evaluate The answer on a scale of 0-100 for each catagory:
 
