@@ -91,9 +91,9 @@ def MockAnsPrompt(domain_name, topic_name, question, answer):
         }
     )
 
-    return prompt.text
+    return prompt.text 
 
-
+#update prompt as needed 
 def MokeEvaluatePrompt(segment, question, answer):
 
     prompt = f"""
@@ -129,4 +129,3 @@ def MokeEvaluatePrompt(segment, question, answer):
         """
     
     return prompt
-
