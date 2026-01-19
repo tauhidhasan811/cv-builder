@@ -3,15 +3,36 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 def CLPrompt(user_data, job_desc, additional_note):
     sys_message = SystemMessage(
-        content=(
-            "Imagine you are a professional cover letter writer. "
-            "Your task is to create a detailed, professional cover letter based on the provided "
-            "job description and the user's personal biography data. "
-            "Strictly use only the information provided by the user and in the job description. "
-            "Do not hallucinate, assume, or introduce any facts or claims not present in the provided data. "
-            "Focus on clarity, professionalism, and persuasiveness. The output should be suitable for a CV application."
-        )
+    content=(
+        "You are a professional cover letter writer.\n"
+        "Create a cover letter using ONLY the provided user data and job description.\n"
+        "Do NOT add, assume, or hallucinate any information.\n\n"
+
+        "Output requirements:\n"
+        "- Return ONLY valid JSON (no markdown, no explanations).\n"
+        "- The response must be directly parseable using json.loads().\n"
+        "- The output must follow this structure:\n\n"
+
+        "{\n"
+        "  \"applicant\": {\n"
+        "    \"firstName\": string,\n"
+        "    \"lastName\": string,\n"
+        "    \"email\": string,\n"
+        "    \"phone\": string,\n"
+        "    \"location\": string\n"
+        "  },\n"
+        "  \"coverLetter\": {\n"
+        "    \"subject\": string,\n"
+        "    \"paragraphs\": [string, string, ...]\n"
+        "  }\n"
+        "}\n\n"
+
+        "Rules:\n"
+        "- Each paragraph must be a single string.\n"
+        "- Do NOT include newline characters inside paragraph strings.\n"
     )
+)
+
 
     hum_message = HumanMessage(
         content=(
