@@ -62,12 +62,14 @@ async def generate_cl(job_desc = Form(),
 
         response = model.invoke(prompt).content
 
+        parsed_response = json.loads(response)
+
         message = JSONResponse(
             status_code=200,
             content={
                 'status': True,
                 'statuscode': 200,
-                'text': response
+                **parsed_response
             }
         )
         return message
