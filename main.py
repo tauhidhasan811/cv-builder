@@ -21,7 +21,7 @@ from component.core.video_to_audio import ExtractAudio
 #from component.core.video_to_audio import ExtractAudio
 from component.services.prompt_coverletter import CLPrompt
 #from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
-from component.services.prompt_mock_test import MokeEvaluatePrompt
+from component.services.prompt_mock_test import MokeEvaluatePrompt, MockQuesPrompt
 from component.services.prompt_cv_maker import DescPrompt, SummPrompt
 
 from component.core.job_scrape import scrape_all
@@ -187,6 +187,39 @@ async def check(data: CheckRequest):
         return message
 
 
+@app.post("/api/mock-question/")
+async def check_mock_answer(segment = Form(),
+                            n_question = Form()):
+    try:
+        
+        
+        prompt = MockQuesPrompt(segment_name=segment, num_of_question=n_question)
+        message = model.invoke(prompt).content
+        message = CleanData(message)
+
+        response = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'status_code': 200,
+                'text': message
+            }
+        )
+        return response
+    
+
+    except Exception as ex:
+        response = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'status_code': 500,
+                'text': str(ex)
+            }
+        )
+        return response
+
+
 
 @app.post("/api/mock-interview/")
 async def check_mock_answer(question = Form(),
@@ -233,6 +266,7 @@ async def check_mock_answer(question = Form(),
             }
         )
         return response
+
 
 
 @app.post("/api/find-jobs/")

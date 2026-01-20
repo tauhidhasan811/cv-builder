@@ -2,7 +2,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain.messages import SystemMessage, HumanMessage
 
 
-def MockQuesPrompt(domain_name, topic_name, num_of_question, def_level):
+"""def MockQuesPrompt(domain_name, topic_name, num_of_question, def_level):
     out_temp = '[{"question": "<question_text>"}]'
 
     sys_message = SystemMessage(
@@ -24,7 +24,7 @@ def MockQuesPrompt(domain_name, topic_name, num_of_question, def_level):
         'sys_message': sys_message.content
     }).text
 
-    return prompt
+    return prompt"""
 
 
 """def AnswerAnalyzPrompt(domain_name, topic_name, question, answer):
@@ -53,7 +53,8 @@ def MockQuesPrompt(domain_name, topic_name, num_of_question, def_level):
     """
 
 
-def MockAnsPrompt(domain_name, topic_name, question, answer):
+
+"""def MockAnsPrompt(domain_name, topic_name, question, answer):
 
     out_temp = '{"result": "CORRECT or WRONG", "score": "<percentage>%", "correct_answer": "<short explanation>"}'
 
@@ -91,7 +92,34 @@ def MockAnsPrompt(domain_name, topic_name, question, answer):
         }
     )
 
-    return prompt.text 
+    return prompt.text """
+
+
+
+def MockQuesPrompt(segment_name, num_of_question):
+    out_temp = '[{"question": "<question_text>"}]'
+
+    sys_message = SystemMessage(
+        content=(
+            f"You are an examiner creating a mock test in the '{segment_name}' segment. "
+            f"Generate exactly {num_of_question} questions "
+            f"All questions must be strictly relevant to this {segment_name}"
+            "Return the result as a valid JSON array of objects, with exactly the following format and using **double quotes**:\n"
+            f"{out_temp}\n"
+        )
+    )
+
+    temp = PromptTemplate(
+        template="{sys_message}",
+        input_variables=['sys_message']
+    )
+    prompt = temp.invoke({
+        'sys_message': sys_message.content
+    }).text
+
+
+    return prompt
+
 
 #update prompt as needed 
 def MokeEvaluatePrompt(segment, question, answer):
