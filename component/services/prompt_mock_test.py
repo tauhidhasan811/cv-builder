@@ -120,10 +120,10 @@ def MokeEvaluatePrompt(segment, question, answer):
         "communication": number,
         "professional_attitude": number,
         "feedback": {{
-            "content_quality": "text",
-            "clarirty_structure": "text",
-            "communication": "text",
-            "professional_attitude": "text",
+            "communication_and_clarity": 0-100,
+            "commercial_awareness": 0-100,
+            "problem_solving": 0-100,
+            "professionalism_and_presence": 0-100
         }}
         }}
         """
