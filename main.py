@@ -32,7 +32,9 @@ from component.services.prompt_recom_jobpost import JobRecommondationPrompt
 ## CV reader
 from component.services.wrapper import extract_document
 
-from component.core.job_scrape import scrape_all
+
+#Scrap Job
+from component.core.job_scrape import scrape_all, scrape_apprenticeship
 import component.parameters as hparams
 
 
@@ -381,3 +383,29 @@ async def find_jobs(file: UploadFile = File()):
             }
         )
         return response
+    
+
+@app.post('/api/get-jobinfo/')
+async def enhance_summary(url = Form()):
+    try:
+        response = scrape_apprenticeship(url=url)
+        message = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'statuscode': 200,
+                'text': response
+            }
+        )
+        return message
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'statuscode': 500,
+                'text': str(ex)
+            }
+        )
+        return message
+
