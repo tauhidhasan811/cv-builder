@@ -53,7 +53,6 @@ from langchain.messages import SystemMessage, HumanMessage
     """
 
 
-
 """def MockAnsPrompt(domain_name, topic_name, question, answer):
 
     out_temp = '{"result": "CORRECT or WRONG", "score": "<percentage>%", "correct_answer": "<short explanation>"}'
@@ -143,15 +142,16 @@ def MokeEvaluatePrompt(segment, question, answer):
         Return ONLY Valid JSON in this format : 
 
         {{
-        "content_quality": number,
-        "clarirty_structure": number,
-        "communication": number,
-        "professional_attitude": number,
+        'interview_crushed': 0-100,
+        "communication_and_clarity": 0-100,
+        "commercial_awareness": 0-100,
+        "problem_solving": 0-100,
+        "professionalism_and_presence": 0-100
         "feedback": {{
-            "communication_and_clarity": 0-100,
-            "commercial_awareness": 0-100,
-            "problem_solving": 0-100,
-            "professionalism_and_presence": 0-100
+            "communication_and_clarity": 'string',
+            "commercial_awareness": 'string',
+            "problem_solving": 'string',
+            "professionalism_and_presence": 'string'
         }}
         }}
         """

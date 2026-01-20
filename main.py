@@ -19,10 +19,15 @@ from component.core.video_to_audio import ExtractAudio
 #from component.services.db_service import InsertService
 #from component.core.check_valid_json import IsValidJson
 #from component.core.video_to_audio import ExtractAudio
+
+## Prompts Import
+
 from component.services.prompt_coverletter import CLPrompt
 #from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
 from component.services.prompt_mock_test import MokeEvaluatePrompt, MockQuesPrompt
 from component.services.prompt_cv_maker import DescPrompt, SummPrompt
+from component.services.prompt_recom_jobpost import JobRecommondationPrompt
+
 
 from component.core.job_scrape import scrape_all
 import component.parameters as hparams
@@ -305,5 +310,44 @@ async def find_jobs(job_title= Form(),
             }
         )
         return response
+    
+
+@app.post("/api/find-jobs-by-cv/")
+async def find_jobs(job_title= Form(),
+                    location = Form()):
+    try:
+
+        data = ''
+        prompt = JobRecommondationPrompt(cv_data = data)
+        BASE_URL = hparams.hparams["BASE_URL"]
+        HEADERS = hparams.hparams["HEADERS"]
+
+        START_URL = hparams.build_search_url(search_term=job_title, 
+                                             location=location)
+
+    
+        jobs = scrape_all(BASE_URL, START_URL, HEADERS)
+        print('-' * 100)
+        print(f"Total jobs scraped: {len(jobs)}")
+        print('-' * 100)
 
 
+        response = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'status_code': 200,
+                'text': jobs
+            }
+        )
+        return response
+    except Exception as ex:
+        response = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'status_code': 500,
+                'text': str(ex)
+            }
+        )
+        return response
