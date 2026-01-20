@@ -102,7 +102,7 @@ print(jobs)"""
 
 
 ### video to audio extract
-import os
+"""import os
 import time
 import moviepy
 import tempfile
@@ -117,8 +117,45 @@ with tempfile.TemporaryDirectory() as dir:
     check = ExtractAudio(vdo_path=path, audio_path=pth)
     print(pth)
 
-    time.sleep(60)
+    time.sleep(60)"""
+
+import component.parameters as hparams
+from component.core.job_scrape import scrape_all
+from component.core.clear_data import CleanData
+
+x = {
+        'job_posts': 
+            ['Software Engineer', 'Backend Developer', 
+             'C++ Developer', 'C#/.NET Developer', 'Systems Engineer', 
+             'Desktop Application Developer', 'Full Stack Developer', 
+             'Software Development Engineer', 'Product Engineer', 'Technical Project Lead'
+             ]
+    }
+
+job_titles = x['job_posts']
+print('*' * 100)
+print(job_titles)
+print('*' * 100)
 
 
+
+BASE_URL = hparams.hparams["BASE_URL"]
+HEADERS = hparams.hparams["HEADERS"]
+
+job_post = []
+
+for job in job_titles:
+    START_URL = hparams.build_search_url(search_term=job, 
+                                                location=" ")
+
+    jobs = scrape_all(BASE_URL, START_URL, HEADERS)
+    print('-' * 100)
+    print(f"Jobs for {job}: {len(jobs)}")
+    print('-' * 100)
+    job_post.extend(jobs)
+
+print('x' * 100)
+print(f"Total jobs scraped: {len(job_post)}")
+print('x' * 100)
 
 

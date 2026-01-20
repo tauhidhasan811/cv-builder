@@ -1,6 +1,7 @@
 import os
 import time
 import json
+import shutil
 import asyncio
 import tempfile
 import requests
@@ -28,6 +29,8 @@ from component.services.prompt_mock_test import MokeEvaluatePrompt, MockQuesProm
 from component.services.prompt_cv_maker import DescPrompt, SummPrompt
 from component.services.prompt_recom_jobpost import JobRecommondationPrompt
 
+## CV reader
+from component.services.wrapper import extract_document
 
 from component.core.job_scrape import scrape_all
 import component.parameters as hparams
@@ -275,12 +278,12 @@ async def check_mock_answer(question = Form(),
 
 
 @app.post("/api/find-jobs/")
-async def find_jobs(job_title= Form(),
-                    location = Form()):
+async def find_jobs(job_title= Form()):
+                    #,location = Form()):
     try:
         BASE_URL = hparams.hparams["BASE_URL"]
         HEADERS = hparams.hparams["HEADERS"]
-
+        location = " "
         START_URL = hparams.build_search_url(search_term=job_title, 
                                              location=location)
 
@@ -313,23 +316,50 @@ async def find_jobs(job_title= Form(),
     
 
 @app.post("/api/find-jobs-by-cv/")
-async def find_jobs(job_title= Form(),
-                    location = Form()):
+async def find_jobs(file: UploadFile = File()):
     try:
 
-        data = ''
-        prompt = JobRecommondationPrompt(cv_data = data)
         BASE_URL = hparams.hparams["BASE_URL"]
         HEADERS = hparams.hparams["HEADERS"]
 
-        START_URL = hparams.build_search_url(search_term=job_title, 
-                                             location=location)
 
-    
-        jobs = scrape_all(BASE_URL, START_URL, HEADERS)
-        print('-' * 100)
-        print(f"Total jobs scraped: {len(jobs)}")
-        print('-' * 100)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            file_name = file.filename
+            file_path = os.path.join(temp_dir, file_name)
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            print(file_path)
+            data = extract_document(file_path=file_path)
+
+        prompt = JobRecommondationPrompt(cv_data = data)
+
+        response_text = model.invoke(prompt).content
+
+   
+        job_list = CleanData(response_text)
+        job_titles = job_list['job_posts']
+        print('*' * 100)
+        print(job_titles)
+        print('*' * 100)
+
+        job_post = []
+        total = 0
+        for job in job_titles:
+            START_URL = hparams.build_search_url(search_term=job, 
+                                                location=" ")
+            
+            j = scrape_all(BASE_URL, START_URL, HEADERS)
+            print('-' * 100)
+            print(f"Jobs for {job}: {len(j)}")
+            print('-' * 100)
+            if len(j) > 0:
+                jobs = {job: j}
+                job_post.append(jobs)
+                total += len(j)
+
+        print('x' * 100)
+        print(f"Total jobs scraped: {total}")
+        print('x' * 100)
 
 
         response = JSONResponse(
@@ -337,7 +367,7 @@ async def find_jobs(job_title= Form(),
             content={
                 'status': True,
                 'status_code': 200,
-                'text': jobs
+                'text': job_post
             }
         )
         return response

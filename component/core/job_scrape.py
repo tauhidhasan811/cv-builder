@@ -79,8 +79,12 @@ def parse_page(html, BASE_URL):
 def scrape_all(BASE_URL, START_URL, HEADERS):
     all_jobs = []
     url = START_URL
-
+    print(f"Starting scrape at: {url}")
+    count = 0
     while url:
+        count += 1
+        if count > 5:
+            break
         print(f"Scraping: {url}")
         r = requests.get(url, headers=HEADERS, timeout=30)
         r.raise_for_status()

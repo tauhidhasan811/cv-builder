@@ -10,7 +10,7 @@ hparams = {
     }
 }
 
-def build_search_url(search_term: str, location: str, sort: str = "DistanceAsc", distance: str = "all") -> str:
+def build_search_url(search_term: str, location: str = " ", sort: str = "DistanceAsc", distance: str = "all") -> str:
 
     query_params = {
         "sort": sort,
