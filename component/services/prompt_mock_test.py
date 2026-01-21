@@ -2,7 +2,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain.messages import SystemMessage, HumanMessage
 
 
-def MockQuesPrompt(domain_name, topic_name, num_of_question, def_level):
+"""def MockQuesPrompt(domain_name, topic_name, num_of_question, def_level):
     out_temp = '[{"question": "<question_text>"}]'
 
     sys_message = SystemMessage(
@@ -24,7 +24,7 @@ def MockQuesPrompt(domain_name, topic_name, num_of_question, def_level):
         'sys_message': sys_message.content
     }).text
 
-    return prompt
+    return prompt"""
 
 
 """def AnswerAnalyzPrompt(domain_name, topic_name, question, answer):
@@ -53,7 +53,7 @@ def MockQuesPrompt(domain_name, topic_name, num_of_question, def_level):
     """
 
 
-def MockAnsPrompt(domain_name, topic_name, question, answer):
+"""def MockAnsPrompt(domain_name, topic_name, question, answer):
 
     out_temp = '{"result": "CORRECT or WRONG", "score": "<percentage>%", "correct_answer": "<short explanation>"}'
 
@@ -91,5 +91,69 @@ def MockAnsPrompt(domain_name, topic_name, question, answer):
         }
     )
 
-    return prompt.text
+    return prompt.text """
 
+
+
+def MockQuesPrompt(segment_name, num_of_question):
+    out_temp = '[{"question": "<question_text>"}]'
+
+    sys_message = SystemMessage(
+        content=(
+            f"You are an examiner creating a mock test in the '{segment_name}' segment. "
+            f"Generate exactly {num_of_question} questions "
+            f"All questions must be strictly relevant to this {segment_name}"
+            "Return the result as a valid JSON array of objects, with exactly the following format and using **double quotes**:\n"
+            f"{out_temp}\n"
+        )
+    )
+
+    temp = PromptTemplate(
+        template="{sys_message}",
+        input_variables=['sys_message']
+    )
+    prompt = temp.invoke({
+        'sys_message': sys_message.content
+    }).text
+
+
+    return prompt
+
+
+#update prompt as needed 
+def MokeEvaluatePrompt(segment, question, answer):
+
+    prompt = f"""
+        You are an interview evaluator.
+
+        interview Segment: {segment}
+
+        Question: {question}
+        Candidate Answer:
+        {answer}
+
+        Evaluate The answer on a scale of 0-100 for each catagory:
+
+        1.Content_Quality 
+        2.Clarity_Structure
+        3.Communication
+        4.Professional_Attitude
+
+        Return ONLY Valid JSON in this format : 
+
+        {{
+        'interview_crushed': 0-100,
+        "communication_and_clarity": 0-100,
+        "commercial_awareness": 0-100,
+        "problem_solving": 0-100,
+        "professionalism_and_presence": 0-100
+        "feedback": {{
+            "communication_and_clarity": 'string',
+            "commercial_awareness": 'string',
+            "problem_solving": 'string',
+            "professionalism_and_presence": 'string'
+        }}
+        }}
+        """
+    
+    return prompt

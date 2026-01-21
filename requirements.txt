@@ -1,6 +1,9 @@
 bs4
 dotenv
 openai
+moviepy
+pymupdf 
+python-docx
 langchain
 pymongo[srv]
 langchain-openai

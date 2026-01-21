@@ -79,8 +79,12 @@ def parse_page(html, BASE_URL):
 def scrape_all(BASE_URL, START_URL, HEADERS):
     all_jobs = []
     url = START_URL
-
+    #print(f"Starting scrape at: {url}")
+    count = 0
     while url:
+        count += 1
+        if count > 5:
+            break
         print(f"Scraping: {url}")
         r = requests.get(url, headers=HEADERS, timeout=30)
         r.raise_for_status()
@@ -89,5 +93,63 @@ def scrape_all(BASE_URL, START_URL, HEADERS):
         all_jobs.extend(jobs)
 
     return all_jobs
+
+
+
+def scrape_apprenticeship(url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+    }
+
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        raise Exception(f"Failed to fetch page: {response.status_code}")
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    data = {
+        "work_full_text": "",
+        "responsibilities": [],
+        "skills": [],
+        "education": []
+    }
+
+    # --- 1) Work / Responsibilities ---
+    work_section = soup.find("section", id="work")
+    if work_section:
+        # get all paragraphs under "Work"
+        paragraphs = work_section.find_all("p")
+        data["work_full_text"] = "\n".join(p.get_text(strip=True) for p in paragraphs if p.get_text(strip=True))
+
+        # get all bullet items under "Work"
+        for ul in work_section.find_all("ul"):
+            for li in ul.find_all("li"):
+                text = li.get_text(strip=True)
+                if text:
+                    data["responsibilities"].append(text)
+
+    # --- 2) Education & Skills in Requirements ---
+    req_section = soup.find("section", id="requirements")
+    if req_section:
+        # EDUCATION (Essential qualifications)
+        edu_header = req_section.find("h3", string="Essential qualifications")
+        if edu_header:
+            # take all text until next subsection
+            for sibling in edu_header.find_next_siblings():
+                # stop if a new h3 starts
+                if sibling.name == "h3":
+                    break
+                text = sibling.get_text(strip=True)
+                if text:
+                    data["education"].append(text)
+
+        # SKILLS
+        skills_header = req_section.find("h3", string="Skills")
+        if skills_header:
+            ul = skills_header.find_next("ul")
+            if ul:
+                data["skills"] = [li.get_text(strip=True) for li in ul.find_all("li")]
+
+    return data
 
 
