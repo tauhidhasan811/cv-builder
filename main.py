@@ -20,6 +20,7 @@ from component.core.check_valid_json import IsValidJson
 from component.services.prompt_coverletter import CLPrompt
 from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
+from component.services.written_test import WTprompt, overall_grade, word_count, completion_rate
 
 from component.core.job_scrape import scrape_all
 import component.parameters as hparams
@@ -81,6 +82,55 @@ async def generate_cl(job_desc = Form(),
         )
         return message
 
+@app.post('/api/written_test/')
+def ai_written_test(role_context = Form(),
+                    case_briefing = Form(),
+                    email_draft = Form()):
+    try:
+        words = word_count(email_draft)
+        com_rate = completion_rate(email_draft)
+
+        prompt = WTprompt(role_context, case_briefing, email_draft)
+        response = model.invoke(prompt)
+        parsed_response = json.loads(response.content)
+
+        content_score = parsed_response.get("contentScore")
+        if not isinstance(content_score, int):
+            raise ValueError("invaslid content score ")
+        
+        # content_score = max()
+        grade = overall_grade(content_score)
+
+        message = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'statuscode': 200,
+
+                #my calculated fields of AI written assessment
+                'wordCount': words,
+                'completionRate': com_rate,
+                'overallGrade': grade,
+
+                # AI evaluated fields
+                'contentScore': content_score,
+                'feedback': parsed_response.get("feedback"),
+                'recommendations': parsed_response.get("recommendations"),
+                'successTips': parsed_response.get("successTips")
+
+            }
+        )
+        return message
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'statuscode': 500,
+                'text': str(ex)
+            }
+        )
+        return message
 
 @app.post('/api/enhance-desc/')
 def enhance_desc(job_information = Form(),
