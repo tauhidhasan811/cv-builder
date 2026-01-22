@@ -24,7 +24,7 @@ from component.core.video_to_audio import ExtractAudio
 ## Prompts Import
 
 from component.services.prompt_coverletter import CLPrompt
-from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
+from component.services.prompt_mock_test import MockQuesPrompt#, MockAnsPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 from component.services.written_test import WTprompt, overall_grade, word_count, completion_rate
 #from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
@@ -70,7 +70,8 @@ class CheckRequest(BaseModel):
 async def generate_cl(job_desc = Form(),
                       file: UploadFile = File(),
                       #user_data = Form(), 
-                      additional_note = Form(None)):
+                      #additional_note = Form(None)
+                      ):
     try:
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -80,7 +81,7 @@ async def generate_cl(job_desc = Form(),
                 shutil.copyfileobj(file.file, buffer)
             print(file_path)
             cv_data = extract_document(file_path=file_path)
-        prompt = CLPrompt(user_data=cv_data, job_desc=job_desc, additional_note=additional_note)
+        prompt = CLPrompt(user_data=cv_data, job_desc=job_desc)#, additional_note=additional_note)
 
         response = model.invoke(prompt).content
 
