@@ -159,7 +159,7 @@ async def check(data: CheckRequest):
     try:
 
         test_id = data.test_id
-        dynamic_api_url = f"https://wasabigaming.vercel.app/api/v1/psychometric-test/{test_id}"
+        dynamic_api_url = f"https://wasabigaming.vercel.app/api/v1/psychometric-attempt/{test_id}"
         api_response = requests.get(dynamic_api_url, timeout=10)
         api_response.raise_for_status()
         raw_test_data = api_response.json()

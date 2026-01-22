@@ -26,9 +26,7 @@ def DescPrompt(job_summary, job_information):
             "Your task is to refine and enhance the user-provided job summary strictly "
             "based on the supplied job experience information. The output will be used "
             "directly in a CV. Do not hallucinate, assume, infer, or add any information "
-            "not present in the provided data. Do not remove or alter facts beyond the "
-            "original content. Focus on improving clarity, readability, professionalism, "
-            "and impact while preserving the original meaning and accuracy."
+            "And finally just return the refined job description without any additional commentary."
         )
     )
 

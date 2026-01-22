@@ -109,6 +109,7 @@ def scrape_apprenticeship(url):
 
     data = {
         "work_full_text": "",
+        'about_organization': '',
         "responsibilities": [],
         "skills": [],
         "education": []
@@ -128,13 +129,11 @@ def scrape_apprenticeship(url):
                 if text:
                     data["responsibilities"].append(text)
 
-    # --- 2) Education & Skills in Requirements ---
+
     req_section = soup.find("section", id="requirements")
     if req_section:
-        # EDUCATION (Essential qualifications)
         edu_header = req_section.find("h3", string="Essential qualifications")
         if edu_header:
-            # take all text until next subsection
             for sibling in edu_header.find_next_siblings():
                 # stop if a new h3 starts
                 if sibling.name == "h3":
@@ -149,6 +148,11 @@ def scrape_apprenticeship(url):
             ul = skills_header.find_next("ul")
             if ul:
                 data["skills"] = [li.get_text(strip=True) for li in ul.find_all("li")]
+
+    # --- 3) About the organization ---
+    company = soup.find('section', id='company')
+    about_org = company.find('p')
+    data['about_organization'] = about_org.get_text(strip=True) if about_org else ''
 
     return data
 
