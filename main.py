@@ -68,10 +68,19 @@ class CheckRequest(BaseModel):
 
 @app.post('/api/gen-cover-letter/')
 async def generate_cl(job_desc = Form(),
-                      user_data = Form(), 
+                      file: UploadFile = File(),
+                      #user_data = Form(), 
                       additional_note = Form(None)):
     try:
-        prompt = CLPrompt(user_data=user_data, job_desc=job_desc, additional_note=additional_note)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            file_name = file.filename
+            file_path = os.path.join(temp_dir, file_name)
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            print(file_path)
+            cv_data = extract_document(file_path=file_path)
+        prompt = CLPrompt(user_data=cv_data, job_desc=job_desc, additional_note=additional_note)
 
         response = model.invoke(prompt).content
 
@@ -97,7 +106,8 @@ async def generate_cl(job_desc = Form(),
         )
         return message
 
-@app.post('/api/written_test/')
+
+@app.post('/api/ai-assessment/')
 def ai_written_test(role_context = Form(),
                     case_briefing = Form(),
                     email_draft = Form()):
@@ -146,6 +156,7 @@ def ai_written_test(role_context = Form(),
             }
         )
         return message
+
 
 @app.post('/api/enhance-desc/')
 def enhance_desc(job_information = Form(),
@@ -280,7 +291,6 @@ async def check_mock_answer(segment = Form(),
             }
         )
         return response
-
 
 
 @app.post("/api/mock-interview/")
