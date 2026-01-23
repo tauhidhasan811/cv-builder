@@ -1,7 +1,7 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage, SystemMessage
 
-def Written_presentation_prompt(text):
+def Written_presentation_prompt(email):
 
     sys_message = SystemMessage(
         content=(
@@ -11,12 +11,15 @@ def Written_presentation_prompt(text):
             "- Professional tone"
             "word count should be at least 300 words."
             "Return a JSON object with:"
+            "- contentScore (integer 0–100)"
+            "- feedback (string)"
+            "Return valid JSON only."
         )
     )
 
     hum_message = HumanMessage(
         content=(
-            f"Here is the written presentation to evaluate:\n\n{text}"
+            f"Here is the written presentation to evaluate:\n\n{email}"
         )
     )
 
