@@ -158,7 +158,7 @@ print('x' * 100)
 print(f"Total jobs scraped: {len(job_post)}")
 print('x' * 100)"""
 
-
+"""
 import requests
 from bs4 import BeautifulSoup
 
@@ -238,4 +238,44 @@ if __name__ == "__main__":
     for e in info["education"]:
         print("-", e)
 
+
+"""
+
+from bs4 import BeautifulSoup
+import requests
+
+
+header = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+}
+url = 'https://www.findapprenticeship.service.gov.uk/apprenticeship/VAC2000001961'
+
+
+
+
+#class_text = text.find('p', 'govuk-hint')
+#all = text.find_all('p')
+#print(all)
+#print(class_text)
+
+"""
+for p in all:
+    print(p.get_text())
+"""
+
+
+
+#print(about_org.text.strip())
+
+#print(text.find('p'))
+
+
+from component.core.job_scrape import scrape_apprenticeship
+
+print('x' * 100)
+print('Scraping apprenticeship details...')
+print('x' * 100)
+
+data = scrape_apprenticeship(url)
+print(data)
 

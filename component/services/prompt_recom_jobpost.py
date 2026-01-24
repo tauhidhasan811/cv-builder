@@ -8,8 +8,8 @@ def JobRecommondationPrompt(cv_data):
     sys_message = SystemMessage(
             content=(
             "You are a professional career advisor. "
-            "Based on the provided CV data, recommend suitable job postings that align with the candidate's skills and experience. "
-            "Return the output strictly in the following dictionary format and include only job titles:\n"
+            "Based on the provided CV data, recommend suitable five job postings that align with the candidate's skills and experience. "
+            "Return the output strictly in the following dictionary format and include only five job titles:\n"
             f"{temp}"
         )
     )
