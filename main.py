@@ -24,7 +24,7 @@ from component.core.video_to_audio import ExtractAudio
 ## Prompts Import
 
 from component.services.prompt_coverletter import CLPrompt
-from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
+from component.services.prompt_mock_test import MockQuesPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 from component.services.written_test import WTprompt, overall_grade, word_count, completion_rate
 from component.services.written_presentation import Written_presentation_prompt
@@ -154,7 +154,7 @@ def ai_written_presentation(email = Form()):
     try:
         prompt = Written_presentation_prompt(email)
         comp_rate = completion_rate(email)
-        word_count = word_count(email)
+        words_count = word_count(email)
         response = model.invoke(prompt)
         parsed_response = json.loads(response.content)
 
@@ -169,7 +169,7 @@ def ai_written_presentation(email = Form()):
                 'status': True,
                 'statuscode': 200,
                 #my calculated fields
-                'wordCount': word_count,
+                'wordCount': words_count,
                 'completionRate': comp_rate,
                 'OverallGrade': overall_grade(content_score),
 
