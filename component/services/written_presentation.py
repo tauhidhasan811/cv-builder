@@ -19,7 +19,7 @@ def Written_presentation_prompt(email):
 
     hum_message = HumanMessage(
         content=(
-            f"Here is the written presentation to evaluate:\n\n{email}"
+            f" written presentation to evaluate:\n\n{email}"
         )
     )
 
