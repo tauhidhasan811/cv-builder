@@ -167,7 +167,7 @@ def ai_written_presentation(email = Form()):
     try:
         prompt = Written_presentation_prompt(email)
         comp_rate = completion_rate(email)
-        word_count = word_count(email)
+        words_count = word_count(email)
         response = model.invoke(prompt)
         parsed_response = json.loads(response.content)
 
@@ -182,7 +182,7 @@ def ai_written_presentation(email = Form()):
                 'status': True,
                 'statuscode': 200,
                 #my calculated fields
-                'wordCount': word_count,
+                'wordCount': words_count,
                 'completionRate': comp_rate,
                 'OverallGrade': overall_grade(content_score),
 
