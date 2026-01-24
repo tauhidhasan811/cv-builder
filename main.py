@@ -28,6 +28,8 @@ from component.services.prompt_mock_test import MockQuesPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 from component.services.written_test import WTprompt, overall_grade, word_count, completion_rate
 from component.services.written_presentation import Written_presentation_prompt
+from component.services.in_tray_email import in_tray_email_prompt
+from component.services.case_law_summary import case_law_summary_prompt
 #from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
 from component.services.prompt_mock_test import MokeEvaluatePrompt, MockQuesPrompt
 from component.services.prompt_cv_maker import DescPrompt, SummPrompt
@@ -189,9 +191,79 @@ def ai_written_presentation(email = Form()):
         )
         return message
 
+@app.post('/api/in_tray_email/')
+def in_tray_email_assessment(instructions = Form(),
+                             email_draft = Form()):
+    try:
+        prompt = in_tray_email_prompt(instructions, email_draft)
+        response = model.invoke(prompt)
+        parsed_response = json.loads(response.content)
+
+        message = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'statuscode': 200,
+                #AI evaluated fields
+                'prioritization': parsed_response.get('prioritization'),
+                'judgment': parsed_response.get('judgment'),
+                'commercialAwarness': parsed_response.get('commercialAwarness'),
+                'contextUnderstanding': parsed_response.get('contextUnderstanding'),
+                'riskAssessment': parsed_response.get('riskAssessment')
+            }
+        )
+
+        return message
+    
+
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'statuscode': 500,
+                'text': str(ex)
+            }
+        )
+        return message
 
 
+@app.post("/api/case_law_summary/")
+def case_law_summary(pretend_case = Form(),
+                     precedent_summary = Form(),
+                     your_summary = Form()):
+    try:
+        prompt = case_law_summary_prompt(
+            precedent_summary=precedent_summary,
+            pretend_case=pretend_case,
+            your_summary=your_summary
+        )
 
+        response = model.invoke(prompt)
+        parsed_response = json.loads(response.content)
+
+        message = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'statuscode': 200,
+                # AI evaluated fields
+                'legalIssue': parsed_response.get('legalIssue'),
+                'caseLinking': parsed_response.get('caseLinking'),
+                'summaryQuality': parsed_response.get('summaryQuality')
+            }
+        )
+        return message
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'statuscode': 500,
+                'text': str(ex)
+            }
+        )
+        return message
 
 
 
