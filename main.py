@@ -24,7 +24,7 @@ from component.core.video_to_audio import ExtractAudio
 ## Prompts Import
 
 from component.services.prompt_coverletter import CLPrompt
-from component.services.prompt_mock_test import MockQuesPrompt
+from component.services.prompt_mock_test import MockQuesPrompt#, MockAnsPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 from component.services.written_test import WTprompt, overall_grade, word_count, completion_rate
 from component.services.written_presentation import Written_presentation_prompt
@@ -69,10 +69,20 @@ class CheckRequest(BaseModel):
 
 @app.post('/api/gen-cover-letter/')
 async def generate_cl(job_desc = Form(),
-                      user_data = Form(), 
-                      additional_note = Form(None)):
+                      file: UploadFile = File(),
+                      #user_data = Form(), 
+                      #additional_note = Form(None)
+                      ):
     try:
-        prompt = CLPrompt(user_data=user_data, job_desc=job_desc, additional_note=additional_note)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            file_name = file.filename
+            file_path = os.path.join(temp_dir, file_name)
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            print(file_path)
+            cv_data = extract_document(file_path=file_path)
+        prompt = CLPrompt(user_data=cv_data, job_desc=job_desc)#, additional_note=additional_note)
 
         response = model.invoke(prompt).content
 
@@ -98,7 +108,8 @@ async def generate_cl(job_desc = Form(),
         )
         return message
 
-@app.post('/api/written_test/')
+
+@app.post('/api/ai-assessment/')
 def ai_written_test(role_context = Form(),
                     case_briefing = Form(),
                     email_draft = Form()):
@@ -122,18 +133,20 @@ def ai_written_test(role_context = Form(),
             content={
                 'status': True,
                 'statuscode': 200,
+                'text':{
+                    #my calculated fields of AI written assessment
+                    'wordCount': words,
+                    'completionRate': com_rate,
+                    'overallGrade': grade,
 
-                #my calculated fields of AI written assessment
-                'wordCount': words,
-                'completionRate': com_rate,
-                'overallGrade': grade,
+                    # AI evaluated fields
+                    'contentScore': content_score,
+                    'feedback': parsed_response.get("feedback"),
+                    'recommendations': parsed_response.get("recommendations"),
+                    'successTips': parsed_response.get("successTips")
 
-                # AI evaluated fields
-                'contentScore': content_score,
-                'feedback': parsed_response.get("feedback"),
-                'recommendations': parsed_response.get("recommendations"),
-                'successTips': parsed_response.get("successTips")
-
+                }
+                
             }
         )
         return message
@@ -188,6 +201,7 @@ def ai_written_presentation(email = Form()):
             }
         )
         return message
+
 
 
 
@@ -259,7 +273,7 @@ async def check(data: CheckRequest):
     try:
 
         test_id = data.test_id
-        dynamic_api_url = f"https://wasabigaming.vercel.app/api/v1/psychometric-test/{test_id}"
+        dynamic_api_url = f"https://wasabigaming.vercel.app/api/v1/psychometric-attempt/{test_id}"
         api_response = requests.get(dynamic_api_url, timeout=10)
         api_response.raise_for_status()
         raw_test_data = api_response.json()
@@ -328,7 +342,6 @@ async def check_mock_answer(segment = Form(),
             }
         )
         return response
-
 
 
 @app.post("/api/mock-interview/")

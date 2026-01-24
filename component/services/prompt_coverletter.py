@@ -1,13 +1,12 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage, SystemMessage
 
-def CLPrompt(user_data, job_desc, additional_note):
+def CLPrompt(user_data, job_desc):
     sys_message = SystemMessage(
     content=(
         "You are a professional cover letter writer.\n"
         "Create a cover letter using ONLY the provided user data and job description.\n"
         "Do NOT add, assume, or hallucinate any information.\n\n"
-
         "Output requirements:\n"
         "- Return ONLY valid JSON (no markdown, no explanations).\n"
         "- The response must be directly parseable using json.loads().\n"
@@ -23,7 +22,7 @@ def CLPrompt(user_data, job_desc, additional_note):
         "  },\n"
         "  \"coverLetter\": {\n"
         "    \"subject\": string,\n"
-        "    \"paragraphs\": [string, string, ...]\n"
+        "    \"paragraphs\": [string(Do not need to mention Dear someone or ..), string, ...]\n"
         "  }\n"
         "}\n\n"
 
@@ -42,15 +41,15 @@ def CLPrompt(user_data, job_desc, additional_note):
     )
 
     temp = PromptTemplate(
-        template="{sys_message}\n\n{hum_message}\n\nAdditional User Input: {additional_note}",
-        input_variables=['sys_message', 'hum_message', 'additional_note']
+        template="{sys_message}\n\n{hum_message}",
+        input_variables=['sys_message', 'hum_message']
     )
 
     prompt = temp.invoke(
         input={
             'sys_message': sys_message.content,
             'hum_message': hum_message.content,
-            'additional_note': additional_note
+            #'additional_note': additional_note
         }
     )
 
