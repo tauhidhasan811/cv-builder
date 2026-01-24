@@ -133,18 +133,20 @@ def ai_written_test(role_context = Form(),
             content={
                 'status': True,
                 'statuscode': 200,
+                'text':{
+                    #my calculated fields of AI written assessment
+                    'wordCount': words,
+                    'completionRate': com_rate,
+                    'overallGrade': grade,
 
-                #my calculated fields of AI written assessment
-                'wordCount': words,
-                'completionRate': com_rate,
-                'overallGrade': grade,
+                    # AI evaluated fields
+                    'contentScore': content_score,
+                    'feedback': parsed_response.get("feedback"),
+                    'recommendations': parsed_response.get("recommendations"),
+                    'successTips': parsed_response.get("successTips")
 
-                # AI evaluated fields
-                'contentScore': content_score,
-                'feedback': parsed_response.get("feedback"),
-                'recommendations': parsed_response.get("recommendations"),
-                'successTips': parsed_response.get("successTips")
-
+                }
+                
             }
         )
         return message
