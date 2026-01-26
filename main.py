@@ -28,6 +28,7 @@ from component.services.prompt_mock_test import MockQuesPrompt#, MockAnsPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 from component.services.written_test import WTprompt, overall_grade, word_count, completion_rate
 from component.services.written_presentation import Written_presentation_prompt
+from component.services.written_test import generate_question_prompt
 from component.services.in_tray_email import in_tray_email_prompt
 from component.services.case_law_summary import case_law_summary_prompt
 #from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
@@ -110,16 +111,60 @@ async def generate_cl(job_desc = Form(),
         )
         return message
 
+@app.post('/api/generate_ai_assessment/')
+def generate_ai_assessment():
+    try:
+
+        prompt = generate_question_prompt()
+
+        response = model.invoke(prompt)
+
+        parsed_response = json.loads(response.content)
+
+        message = JSONResponse(
+
+            status_code= 200,
+            content = {
+                'status': True,
+                'statusCode': 200,
+                'text':{
+                    'roleContext': parsed_response.get('roleContext'),
+                    'caseStudy': parsed_response.get('caseStudy')
+
+                } 
+                
+            }
+
+        )
+        return message
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content ={
+                'status': False,
+                'statusCode': 500,
+                'text': str(ex)
+            }
+        )
+
+
 
 @app.post('/api/ai-assessment/')
-def ai_written_test(role_context = Form(),
-                    case_briefing = Form(),
-                    email_draft = Form()):
+def ai_written_test(written_submission = Form()):
     try:
-        words = word_count(email_draft)
-        com_rate = completion_rate(email_draft)
+        ques_prompt = generate_question_prompt()
 
-        prompt = WTprompt(role_context, case_briefing, email_draft)
+        response = model.invoke(ques_prompt)
+
+        ques_parsed_response = json.loads(response.content)
+
+        role_context = ques_parsed_response.get('roleContext')
+        case_study = ques_parsed_response.get('caseStudy')
+
+        words = word_count(written_submission)
+        com_rate = completion_rate(written_submission)
+
+        prompt = WTprompt(role_context, case_study, written_submission)
         response = model.invoke(prompt)
         parsed_response = json.loads(response.content)
 
