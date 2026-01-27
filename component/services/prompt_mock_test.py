@@ -148,10 +148,8 @@ def MokeEvaluatePrompt(segment, question, answer):
         "problem_solving": 0-100,
         "professionalism_and_presence": 0-100
         "feedback": {{
-            "communication_and_clarity": 'string',
-            "commercial_awareness": 'string',
-            "problem_solving": 'string',
-            "professionalism_and_presence": 'string'
+            "strength": "one of strength",
+            "areas_for_improvement": "one areas for improvement"
         }}
         }}
         """
