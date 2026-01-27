@@ -27,14 +27,16 @@ def completion_rate(text):
 
 
 def overall_grade(score):
-    if score >=85:
-        return "A"
-    elif score >=70:
-        return "B"
-    elif score >=50:
-        return "C"
+    if score >= 85:
+        return "A"  
+    elif score >= 70:
+        return "B"  
+    elif score >= 50:
+        return "C"  
+    elif score >= 35:
+        return "D"  
     else:
-        return "D"
+        return "F"  
     
 
 def generate_question_prompt():

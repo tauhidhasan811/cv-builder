@@ -29,8 +29,9 @@ from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 from component.services.written_test import WTprompt, overall_grade, word_count, completion_rate
 from component.services.written_presentation import Written_presentation_prompt
 from component.services.written_test import generate_question_prompt
-from component.services.in_tray_email import in_tray_email_prompt
-from component.services.case_law_summary import case_law_summary_prompt
+from component.services.written_presentation import written_presentation_ques_generator
+from component.services.in_tray_email import in_tray_email_prompt, in_tray_email_ques_generator
+from component.services.case_law_summary import case_law_summary_prompt, generate_case_law_summary_question
 #from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
 from component.services.prompt_mock_test import MokeEvaluatePrompt, MockQuesPrompt
 from component.services.prompt_cv_maker import DescPrompt, SummPrompt
@@ -110,19 +111,17 @@ async def generate_cl(job_desc = Form(),
             }
         )
         return message
+    
+def get_generated_questions():
+    prompt = generate_question_prompt()
+    response = model.invoke(prompt)
+    return json.loads(response.content)
 
 @app.post('/api/generate_ai_assessment/')
 def generate_ai_assessment():
     try:
-
-        prompt = generate_question_prompt()
-
-        response = model.invoke(prompt)
-
-        parsed_response = json.loads(response.content)
-
+        parsed_response = get_generated_questions()
         message = JSONResponse(
-
             status_code= 200,
             content = {
                 'status': True,
@@ -152,14 +151,12 @@ def generate_ai_assessment():
 @app.post('/api/ai-assessment/')
 def ai_written_test(written_submission = Form()):
     try:
-        ques_prompt = generate_question_prompt()
+        question_data = get_generated_questions()
 
-        response = model.invoke(ques_prompt)
-
-        ques_parsed_response = json.loads(response.content)
-
-        role_context = ques_parsed_response.get('roleContext')
-        case_study = ques_parsed_response.get('caseStudy')
+        role_context = question_data.get('roleContext')
+        case_study = question_data.get('caseStudy')
+        # print("---role context---", role_context)
+        # print("---case study---", case_study)
 
         words = word_count(written_submission)
         com_rate = completion_rate(written_submission)
@@ -207,31 +204,79 @@ def ai_written_test(written_submission = Form()):
             }
         )
         return message
-    
-#endpoint for written presentation evaluation
-@app.post('/api/written_presentation/')
-def ai_written_presentation(email = Form()):
+
+
+
+
+def get_presentation_questions():
+    prompt = written_presentation_ques_generator()
+    response = model.invoke(prompt)
+    return json.loads(response.content)
+
+
+#api endpoint for written presentation task generation
+@app.post('/api/generate_written_presentation_ques/')
+def generate_written_presentation_task():
     try:
-        prompt = Written_presentation_prompt(email)
-        comp_rate = completion_rate(email)
-        words_count = word_count(email)
+        presentation_ques_data = get_presentation_questions()
+        message = JSONResponse(
+            status_code=200,
+            content = {
+                'status':True,
+                'statuscode':200,
+                'text': {
+                    'task': presentation_ques_data.get('caseStudy'),
+                    'instructions': presentation_ques_data.get('instructions'),
+                    'proTips': presentation_ques_data.get('proTips')
+                }
+            }
+        )
+
+        return message
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'statuscode': 500,
+                'text': str(ex)
+            }
+        )
+        return message
+
+
+#endpoint for written presentation evaluation
+@app.post('/api/written_presentation_result/')
+def ai_written_presentation(written_submission = Form()):
+    try:
+        questions_data = get_presentation_questions()
+        case_study = questions_data.get('caseStudy')
+        instructions = questions_data.get('instructions')
+        pro_tips = questions_data.get('proTips')
+
+        prompt = Written_presentation_prompt(case_study,instructions,pro_tips,written_submission)
+        comp_rate = completion_rate(written_submission)
+        words_count = word_count(written_submission)
         response = model.invoke(prompt)
         parsed_response = json.loads(response.content)
 
         content_score = parsed_response.get('contentScore')
+        print("Content Score:", content_score)
         if not isinstance(content_score, int):
             raise ValueError("invalid content score")
         
+        # 70 % content score + 30 % completion rate
+        composite_score = int((content_score * 0.7) + (comp_rate * 0.3))
         
         message = JSONResponse(
             status_code=200,
             content={
                 'status': True,
-                'statuscode': 200,
+                'statusCode': 200,
                 #my calculated fields
                 'wordCount': words_count,
                 'completionRate': comp_rate,
-                'OverallGrade': overall_grade(content_score),
+                'OverallGrade': overall_grade(composite_score),
 
                 #AI evaluated fields
                 'feedback': parsed_response.get('feedback')
@@ -248,12 +293,50 @@ def ai_written_presentation(email = Form()):
             }
         )
         return message
+    
+
+
+def generate_in_tray_email_task():
+    prompt= in_tray_email_ques_generator()
+    response = model.invoke(prompt)
+    return json.loads(response.content)
+
+
+@app.post('/api/generate_email_task/')
+def generate_email_task():
+    try:
+        email_task = generate_in_tray_email_task()
+        message = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'statuscode': 200,
+                'text': {
+                    'instructions': email_task.get('instructions'),
+                    'draftEmail': email_task.get('draftEmail')
+                }
+            }
+        )
+        return message
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'statuscode': 500,
+                'text': str(ex)
+            }
+        )
+        return message
+
+
 
 @app.post('/api/in_tray_email/')
-def in_tray_email_assessment(instructions = Form(),
-                             email_draft = Form()):
+def in_tray_email_assessment(
+                             reply_raft = Form()):
     try:
-        prompt = in_tray_email_prompt(instructions, email_draft)
+        instructions = generate_in_tray_email_task().get('instructions')
+        prompt = in_tray_email_prompt(instructions, reply_raft)
         response = model.invoke(prompt)
         parsed_response = json.loads(response.content)
 
@@ -286,17 +369,80 @@ def in_tray_email_assessment(instructions = Form(),
         return message
 
 
+def generate_case_law_summary_questions():
+    prompt = generate_case_law_summary_question()
+    response = model.invoke(prompt)
+    return json.loads(response.content)
+
+
+@app.post('/api/generate_case_law_summary_ques/')
+def generate_case_law_summary_task():
+    try:
+        case_law_ques_data = generate_case_law_summary_questions()
+        message = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'statuscode': 200,
+                'text': {
+                    'precedentSummary': case_law_ques_data.get('precedentSummary'),
+                    'pretendCase': case_law_ques_data.get('pretendCase')
+                }
+            }
+        )
+        return message
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'statuscode': 500,
+                'text': str(ex)
+            }
+        )
+        return message
+    
+
+@app.post("/api/case_summary_gen/")
+def case_summary_generation():
+    try:
+        questions_data = generate_case_law_summary_questions()
+        message = JSONResponse(
+            status_code=200,
+            content={
+                'status': True,
+                'statuscode': 200,
+                'text': {
+                    'precedentSummary': questions_data.get('precedentSummary'),
+                    'pretendCase': questions_data.get('pretendCase')
+                }
+            }
+        )
+        return message
+    except Exception as ex:
+        message = JSONResponse(
+            status_code=500,
+            content={
+                'status': False,
+                'statuscode': 500,
+                'text': str(ex)
+            }
+        )
+        return message
+
 @app.post("/api/case_law_summary/")
-def case_law_summary(pretend_case = Form(),
-                     precedent_summary = Form(),
+def case_law_summary(
                      your_summary = Form()):
     try:
+        questions_data = generate_case_law_summary_questions()
+        precedent_summary = questions_data.get('precedentSummary')
+        pretend_case = questions_data.get('pretendCase')
+
         prompt = case_law_summary_prompt(
             precedent_summary=precedent_summary,
             pretend_case=pretend_case,
             your_summary=your_summary
         )
-
         response = model.invoke(prompt)
         parsed_response = json.loads(response.content)
 
