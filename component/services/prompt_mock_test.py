@@ -142,11 +142,11 @@ def MokeEvaluatePrompt(segment, question, answer):
         Return ONLY Valid JSON in this format : 
 
         {{
-        'interview_crushed': 0-100,
-        "communication_and_clarity": 0-100,
-        "commercial_awareness": 0-100,
-        "problem_solving": 0-100,
-        "professionalism_and_presence": 0-100
+        'interview_crushed': 10-95,
+        "communication_and_clarity": 10-95,
+        "commercial_awareness": 10-95,
+        "problem_solving": 10-95,
+        "professionalism_and_presence": 10-95
         "feedback": {{
             "strength": "one of strength",
             "areas_for_improvement": "one areas for improvement"
