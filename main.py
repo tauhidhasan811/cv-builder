@@ -20,6 +20,7 @@ from component.core.video_to_audio import ExtractAudio
 #from component.services.db_service import InsertService
 #from component.core.check_valid_json import IsValidJson
 #from component.core.video_to_audio import ExtractAudio
+from component.services.ques_generations import get_generated_questions, get_presentation_questions, generate_in_tray_email_task, generate_case_law_summary_questions
 
 ## Prompts Import
 
@@ -28,10 +29,9 @@ from component.services.prompt_mock_test import MockQuesPrompt#, MockAnsPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
 from component.services.written_test import WTprompt, overall_grade, word_count, completion_rate
 from component.services.written_presentation import Written_presentation_prompt
-from component.services.written_test import generate_question_prompt
-from component.services.written_presentation import written_presentation_ques_generator
-from component.services.in_tray_email import in_tray_email_prompt, in_tray_email_ques_generator
-from component.services.case_law_summary import case_law_summary_prompt, generate_case_law_summary_question
+
+from component.services.in_tray_email import in_tray_email_prompt
+from component.services.case_law_summary import case_law_summary_prompt
 #from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
 from component.services.prompt_mock_test import MokeEvaluatePrompt, MockQuesPrompt
 from component.services.prompt_cv_maker import DescPrompt, SummPrompt
@@ -112,10 +112,6 @@ async def generate_cl(job_desc = Form(),
         )
         return message
     
-def get_generated_questions():
-    prompt = generate_question_prompt()
-    response = model.invoke(prompt)
-    return json.loads(response.content)
 
 @app.post('/api/generate_ai_assessment/')
 def generate_ai_assessment():
@@ -205,10 +201,6 @@ def ai_written_test(written_submission = Form()):
 
 
 
-def get_presentation_questions():
-    prompt = written_presentation_ques_generator()
-    response = model.invoke(prompt)
-    return json.loads(response.content)
 
 
 #api endpoint for written presentation task generation
@@ -293,12 +285,6 @@ def ai_written_presentation(written_submission = Form()):
     
 
 
-def generate_in_tray_email_task():
-    prompt= in_tray_email_ques_generator()
-    response = model.invoke(prompt)
-    return json.loads(response.content)
-
-
 @app.post('/api/generate_email_task/')
 def generate_email_task():
     try:
@@ -364,12 +350,6 @@ def in_tray_email_assessment(
             }
         )
         return message
-
-
-def generate_case_law_summary_questions():
-    prompt = generate_case_law_summary_question()
-    response = model.invoke(prompt)
-    return json.loads(response.content)
 
 
 @app.post('/api/generate_case_law_summary_ques/')
