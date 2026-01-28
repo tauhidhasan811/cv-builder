@@ -129,7 +129,6 @@ def generate_ai_assessment():
                 'text':{
                     'roleContext': parsed_response.get('roleContext'),
                     'caseStudy': parsed_response.get('caseStudy')
-
                 } 
                 
             }
@@ -145,7 +144,6 @@ def generate_ai_assessment():
                 'text': str(ex)
             }
         )
-
 
 
 @app.post('/api/ai-assessment/')
@@ -204,7 +202,6 @@ def ai_written_test(written_submission = Form()):
             }
         )
         return message
-
 
 
 
@@ -710,11 +707,22 @@ async def find_jobs(file: UploadFile = File()):
             data = extract_document(file_path=file_path)
 
         prompt = JobRecommondationPrompt(cv_data = data)
-
+        print('=' * 100)
+        print(prompt)
+        print('=' * 100)
+        print('\n' * 10)
         response_text = model.invoke(prompt).content
+        print('~' * 100)
+        print(response_text)
+        print('~' * 100)
+        print('\n' * 10)
 
    
         job_list = CleanData(response_text)
+        print('x' * 100)
+        print(job_list)
+        print('x' * 100)
+        print('\n' * 10)
         job_titles = job_list['job_posts']
         print('*' * 100)
         print(job_titles)
