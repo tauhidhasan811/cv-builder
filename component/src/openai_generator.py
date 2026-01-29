@@ -9,9 +9,9 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 conversations = {}  # in memory converstation store, that stores query as well as response
 
 SYSTEM_PROMPT = """Rewrite psychometric insights into concise natural language:
-- Key strengths (~3 words)
-- Areas for improvement (~3 words)
-- Overall feedback (1-2 lines)
+- Key strengths as keyStrength (~3 words)
+- Areas for improvement as areaImprovement (~3 words)
+- Overall feedback as feedback(1-2 lines)
 Be direct and concise."""
 
 

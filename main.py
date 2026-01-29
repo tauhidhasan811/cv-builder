@@ -1,3 +1,4 @@
+
 import os
 import time
 import json
@@ -32,6 +33,7 @@ from component.services.written_presentation import Written_presentation_prompt
 
 from component.services.in_tray_email import in_tray_email_prompt
 from component.services.case_law_summary import case_law_summary_prompt
+from component.services.get_psycho_data import get_psychometric_data
 #from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
 from component.services.prompt_mock_test import MokeEvaluatePrompt, MockQuesPrompt
 from component.services.prompt_cv_maker import DescPrompt, SummPrompt
@@ -352,34 +354,6 @@ def in_tray_email_assessment(
         return message
 
 
-@app.post('/api/generate_case_law_summary_ques/')
-def generate_case_law_summary_task():
-    try:
-        case_law_ques_data = generate_case_law_summary_questions()
-        message = JSONResponse(
-            status_code=200,
-            content={
-                'status': True,
-                'statuscode': 200,
-                'text': {
-                    'precedentSummary': case_law_ques_data.get('precedentSummary'),
-                    'pretendCase': case_law_ques_data.get('pretendCase')
-                }
-            }
-        )
-        return message
-    except Exception as ex:
-        message = JSONResponse(
-            status_code=500,
-            content={
-                'status': False,
-                'statuscode': 500,
-                'text': str(ex)
-            }
-        )
-        return message
-    
-
 @app.post("/api/case_summary_gen/")
 def case_summary_generation():
     try:
@@ -507,19 +481,14 @@ async def enhance_summary(user_summary = Form(),
         return message
 
 
+
 @app.post("/api/anlz-psychometric/")
 async def check(data: CheckRequest):
 
     try:
 
         test_id = data.test_id
-        dynamic_api_url = f"https://wasabigaming.vercel.app/api/v1/psychometric-attempt/{test_id}"
-        api_response = requests.get(dynamic_api_url, timeout=10)
-        api_response.raise_for_status()
-        raw_test_data = api_response.json()
-
-        # Format data for OpenAI
-        formatted_data = format_psychometric_data(raw_test_data)
+        formatted_data = get_psychometric_data(test_id=test_id)
         session_id = data.test_id  # Use test_id as session
 
         # Generate concise psychometric insights
@@ -527,6 +496,7 @@ async def check(data: CheckRequest):
             user_message=formatted_data["text"],
             session_id=session_id
         )
+        parsed_response = json.loads(response)
 
         clear_session(session_id)
 
@@ -535,7 +505,10 @@ async def check(data: CheckRequest):
             content={
                 'status': True,
                 'statuscode': 200,
-                'text': response
+                'keyStrength': parsed_response.get('keyStrength'),
+                'AreaImprovements':parsed_response.get('areaImprovement'),
+                'overallFeedback': parsed_response.get('feedback')
+
             }
         )
         return message
