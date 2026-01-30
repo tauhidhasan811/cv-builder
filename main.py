@@ -26,7 +26,7 @@ from component.services.psycho_prompt import psycho_test_prompt
 from component.services.get_psycho_data import get_psycho_data
 
 ## Prompts Import
-
+from component.services.psycho_prompt import psycho_test_prompt
 from component.services.prompt_coverletter import CLPrompt
 from component.services.prompt_mock_test import MockQuesPrompt#, MockAnsPrompt
 from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
@@ -321,8 +321,7 @@ def generate_email_task():
 
 
 @app.post('/api/in_tray_email/')
-def in_tray_email_assessment(
-                             reply_raft = Form()):
+def in_tray_email_assessment(reply_raft = Form()):
     try:
         instructions = generate_in_tray_email_task().get('instructions')
         prompt = in_tray_email_prompt(instructions, reply_raft)
@@ -386,8 +385,7 @@ def case_summary_generation():
         return message
 
 @app.post("/api/case_law_summary/")
-def case_law_summary(
-                     your_summary = Form()):
+def case_law_summary(your_summary = Form()):
     try:
         questions_data = generate_case_law_summary_questions()
         precedent_summary = questions_data.get('precedentSummary')
@@ -493,12 +491,21 @@ async def check(data: CheckRequest):
         psycho_data = get_psycho_data(test_id)
         
         if not psycho_data:
-            raise ValueError("No psychometric data found")
+            return JSONResponse(
+                status_code=500,
+                content={
+                    'status': False,
+                    'statuscode': 500,
+                    'keyStrength': 0,
+                    'AreaImprovements': 0,
+                    'overallFeedback': 0
+                }
+            )
         
         session_id = psycho_data.get('test_id', test_id) if isinstance(psycho_data, dict) else test_id
 
         # Format data into prompt
-        from component.services.psycho_prompt import psycho_test_prompt
+        #from component.services.psycho_prompt import psycho_test_prompt
         prompt = psycho_test_prompt(psycho_data)
         
         # Invoke model with formatted prompt

@@ -5,7 +5,7 @@ import json
 import requests
 from component.src.data.data import format_psychometric_data
 def get_psycho_data(test_id: str):
-    try:
+    """try:
         dynamic_url = f"https://wasabigaming.vercel.app/api/v1/psychometric-attempt/{test_id}"
         # print(f"Fetching from URL: {dynamic_url}")
         
@@ -27,4 +27,16 @@ def get_psycho_data(test_id: str):
         raise
     except Exception as e:
         print(f"Error formatting data: {e}")
-        raise
+        raise"""
+
+    dynamic_url = f"https://wasabigaming.vercel.app/api/v1/psychometric-attempt/{test_id}"
+
+    api_response = requests.get(dynamic_url)
+    api_response.raise_for_status()
+        
+    raw_data = api_response.json()
+        
+    formatted_data = format_psychometric_data(raw_data)
+    return formatted_data
+        
+
