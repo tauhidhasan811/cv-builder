@@ -63,6 +63,8 @@ load_dotenv()
 
 #model = LoadGemini()
 model = LoadGPT()
+fixedModel = LoadGPT(temp=0)
+dynamicModel = LoadGPT(temp=1)
 audio_model = OpenAIAudio()
 
 
