@@ -12,8 +12,6 @@ def get_generated_questions():
     response = model.invoke(prompt)
     return json.loads(response.content)
 
-
-
 def get_presentation_questions():
     prompt = written_presentation_ques_generator()
     response = model.invoke(prompt)

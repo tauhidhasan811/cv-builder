@@ -22,6 +22,8 @@ from component.core.video_to_audio import ExtractAudio
 #from component.core.check_valid_json import IsValidJson
 #from component.core.video_to_audio import ExtractAudio
 from component.services.ques_generations import get_generated_questions, get_presentation_questions, generate_in_tray_email_task, generate_case_law_summary_questions
+from component.services.psycho_prompt import psycho_test_prompt
+from component.services.get_psycho_data import get_psycho_data
 
 ## Prompts Import
 
@@ -33,7 +35,7 @@ from component.services.written_presentation import Written_presentation_prompt
 
 from component.services.in_tray_email import in_tray_email_prompt
 from component.services.case_law_summary import case_law_summary_prompt
-from component.services.get_psycho_data import get_psychometric_data
+# from component.services.get_psycho_data import get_psychometric_data
 #from component.services.prompt_mock_test import MockQuesPrompt, MockAnsPrompt
 from component.services.prompt_mock_test import MokeEvaluatePrompt, MockQuesPrompt
 from component.services.prompt_cv_maker import DescPrompt, SummPrompt
@@ -484,36 +486,40 @@ async def enhance_summary(user_summary = Form(),
 
 @app.post("/api/anlz-psychometric/")
 async def check(data: CheckRequest):
-
     try:
-
         test_id = data.test_id
-        formatted_data = get_psychometric_data(test_id=test_id)
-        session_id = data.test_id  # Use test_id as session
+        psycho_data = get_psycho_data(test_id)
+        
+        if not psycho_data:
+            raise ValueError("No psychometric data found")
+        
+        session_id = psycho_data.get('test_id', test_id) if isinstance(psycho_data, dict) else test_id
 
-        # Generate concise psychometric insights
-        response = generate_openai_response(
-            user_message=formatted_data["text"],
-            session_id=session_id
-        )
-        parsed_response = json.loads(response)
+        # Format data into prompt
+        from component.services.psycho_prompt import psycho_test_prompt
+        prompt = psycho_test_prompt(psycho_data)
+        
+        # Invoke model with formatted prompt
+        response = model.invoke(prompt)
+        parsed_response = json.loads(response.content)
 
         clear_session(session_id)
-
-        message = JSONResponse(
+        
+        return JSONResponse(
             status_code=200,
             content={
                 'status': True,
                 'statuscode': 200,
                 'keyStrength': parsed_response.get('keyStrength'),
-                'AreaImprovements':parsed_response.get('areaImprovement'),
+                'AreaImprovements': parsed_response.get('areaImprovement'),
                 'overallFeedback': parsed_response.get('feedback')
-
             }
         )
-        return message
+        
     except Exception as ex:
-        message = JSONResponse(
+        import traceback
+        print(f"Error: {traceback.format_exc()}")
+        return JSONResponse(
             status_code=500,
             content={
                 'status': False,
@@ -521,7 +527,7 @@ async def check(data: CheckRequest):
                 'text': str(ex)
             }
         )
-        return message
+    
 
 
 @app.post("/api/mock-question/")
