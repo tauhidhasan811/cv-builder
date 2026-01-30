@@ -1,116 +1,103 @@
-# data.py
-# api_data = {
-#     "user_id": "user111",
-#     "session_id": "sess_abc123",
-#     "test_type": "verbal_reasoning",
-#     "performance": {
-#         "overall": {"score": 10, "total": 15, "accuracy_pct": 66.7},
-#         "skill_breakdown": {
-#             "reading_comprehension": 60,
-#             "critical_reasoning": 66.7,
-#             "vocabulary": 75
-#         },
-#         "time_analysis": {"avg_time_sec": 55, "time_pressure_errors": 4},
-#         "difficulty_breakdown": {"easy": 90, "medium": 60, "hard": 30}
-#     }
-# }
-
-# from sqlalchemy import true
-
-
-api_data = {
-    "statusCode": 201,
-    "success": True,
-    "message": "Psychometric test created successfully",
-    "data": {
-        "_id": "694b7db326ecb3faba1bd729",
-        "user": "69366af45f4eab38f19b579a",
-        "test": {
-            "_id": "69425360bf7573f3427adba9",
-            "title": "Verbal Reasoning Test"
-        },
-        "answers": [
-            {
-                "questionId": "69425360bf7573f3427adbaa",
-                "userAnswer": "Sharing progress and challenges before being asked",
-                "isCorrect": True,
-                "timeTakenSec": 12,
-                "_id": "694b7db326ecb3faba1bd72a"
-            },
-            {
-                "questionId": "69425360bf7573f3427adbab",
-                "userAnswer": "All managers are leaders, John is a leader, therefore John is a manager",
-                "isCorrect": False,
-                "timeTakenSec": 8,
-                "_id": "694b7db326ecb3faba1bd72b"
-            },
-            {
-                "questionId": "69425360bf7573f3427adbac",
-                "userAnswer": "They support the conclusion implicitly",
-                "isCorrect": True,
-                "timeTakenSec": 8,
-                "_id": "694b7db326ecb3faba1bd72c"
-            }
-        ],
-        "testScore": 2,
-        "totalQuestions": 3,
-        "accuracyPct": 66.67,
-        "timeAnalysis": {
-            "avgTimeSec": 9.33,
-            "timePressureErrors": 1
-        },
-        "difficultyBreakdown": {
-            "easyQuestions": 1,
-            "mediumQuestions": 1,
-            "hardQuestions": 1
-        },
-        "correctedAnswers": {
-            "totalCorrectedAnswers": 2,
-            "easyCorrectedAnswers": 1,
-            "mediumCorrectedAnswers": 0,
-            "hardCorrectedAnswers": 1
-        },
-        "createdAt": "2025-12-24T05:44:19.727Z",
-        "updatedAt": "2025-12-24T05:44:19.727Z",
-        "__v": 0
+def format_psychometric_data(raw_data):
+    print(f"Raw data received: {raw_data}")
+    # Extract the attempt object
+    attempt = raw_data['data']['attempt']
+    
+    # Extract nested objects
+    test = attempt.get('test')
+    if not test:
+        raise ValueError("No test data found in response")
+    
+    user = attempt.get('user', {})
+    answers = attempt.get('answers', [])
+    
+    # Extract test details
+    category = test.get('category', 'Unknown')
+    total_questions = len(answers)
+    score = attempt.get('score', 0)
+    total_time = attempt.get('totalTime', 0)
+    
+    # Analyze answers
+    correct_answers = sum(1 for ans in answers if ans.get('isCorrect', False))
+    incorrect_answers = total_questions - correct_answers
+    
+    # Calculate average time per question
+    avg_time = round(total_time / total_questions, 2) if total_questions > 0 else 0
+    
+    # Analyze difficulty performance - need to match with allQuestions
+    difficulty_stats = {}
+    for answer in answers:
+        q_id = answer['questionId']
+        # Find matching question in allQuestions
+        for q in test['allQuestions']:
+            if q['_id'] == q_id:
+                difficulty = q.get('difficulty', 'unknown')
+                is_correct = answer.get('isCorrect', False)
+                
+                if difficulty not in difficulty_stats:
+                    difficulty_stats[difficulty] = {'correct': 0, 'total': 0}
+                
+                difficulty_stats[difficulty]['total'] += 1
+                if is_correct:
+                    difficulty_stats[difficulty]['correct'] += 1
+                break
+    
+    # Format the data for the prompt
+    formatted_data = {
+        'test_id': attempt.get('_id'),
+        'user_name': f"{user.get('firstName', '')} {user.get('lastName', '')}".strip(),
+        'category': category,
+        'total_questions': total_questions,
+        'correct_answers': correct_answers,
+        'incorrect_answers': incorrect_answers,
+        'score': score,
+        'total_time_seconds': total_time,
+        'average_time_per_question': avg_time,
+        'difficulty_breakdown': difficulty_stats,
+        'performance_percentage': round((correct_answers / total_questions * 100), 2) if total_questions > 0 else 0
     }
-}
+    
+    print(f"Formatted data: {formatted_data}")
+    return formatted_data
 
-
-# def compress_test_result(data: dict) -> str:
-#     p = data["performance"]
-
-#     return (
-#         f"Overall {p['overall']['score']}/{p['overall']['total']} "
-#         f"({p['overall']['accuracy_pct']}%)\n"
-#         f"Skills RC{p['skill_breakdown']['reading_comprehension']} "
-#         f"CR{int(p['skill_breakdown']['critical_reasoning'])} "
-#         f"V{p['skill_breakdown']['vocabulary']}\n"
-#         f"Time {p['time_analysis']['avg_time_sec']}s "
-#         f"err{p['time_analysis']['time_pressure_errors']}\n"
-#         f"Diff E{p['difficulty_breakdown']['easy']} "
-#         f"M{p['difficulty_breakdown']['medium']} "
-#         f"H{p['difficulty_breakdown']['hard']}"
+# def format_psychometric_data(api_data: dict) -> dict:
+#     attempt = api_data["data"]["attempt"]
+    
+#     # Extract basic info
+#     test = attempt["test"]
+#     answers = attempt["answers"]
+    
+#     # Calculate metrics
+#     total_questions = len(answers)
+#     correct_answers = sum(1 for ans in answers if ans["isCorrect"])
+#     accuracy_pct = round((correct_answers / total_questions * 100), 1) if total_questions > 0 else 0
+#     avg_time = round(attempt["totalTime"] / total_questions, 1) if total_questions > 0 else 0
+    
+#     # Difficulty breakdown
+#     difficulty_count = {"easy": 0, "medium": 0, "hard": 0}
+#     for ans in answers:
+#         q_id = ans["questionId"]
+#         # Find matching question in allQuestions
+#         for q in test["allQuestions"]:
+#             if q["_id"] == q_id:
+#                 difficulty = q.get("difficulty", "easy")
+#                 difficulty_count[difficulty] += 1
+#                 break
+    
+#     # Build text
+#     text = (
+#         f"Test {test['category']}\n"
+#         f"Score {attempt['score']}/{total_questions} "
+#         f"({accuracy_pct}%)\n"
+#         f"Time {avg_time}s avg\n"
+#         f"Diff E{difficulty_count['easy']} "
+#         f"M{difficulty_count['medium']} "
+#         f"H{difficulty_count.get('hard', 0)}"
 #     )
 
-def format_psychometric_data(api_data: dict) -> dict:
-    d = api_data["data"]
+#     return {
+#         "session_id": attempt["_id"],
+#         "text": text
+#     }
 
-    text = (
-        f"Test {d['test']['title']}\n"
-        f"Score {d['testScore']}/{d['totalQuestions']} "
-        f"({d['accuracyPct']}%)\n"
-        f"Time {d['timeAnalysis']['avgTimeSec']}s "
-        f"err{d['timeAnalysis']['timePressureErrors']}\n"
-        f"Diff E{d['difficultyBreakdown']['easyQuestions']} "
-        f"M{d['difficultyBreakdown']['mediumQuestions']} "
-        f"H{d['difficultyBreakdown']['hardQuestions']}\n"
-        f"Corrected {d['correctedAnswers']['totalCorrectedAnswers']}"
-    )
 
-    return {
-        "session_id": d["_id"],
-        "text": text
-    }
-
-formatted_data = format_psychometric_data(api_data)

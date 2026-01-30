@@ -9,9 +9,9 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 conversations = {}  # in memory converstation store, that stores query as well as response
 
 SYSTEM_PROMPT = """Rewrite psychometric insights into concise natural language:
-- Key strengths (~3 words)
-- Areas for improvement (~3 words)
-- Overall feedback (1-2 lines)
+- Key strengths as keyStrength (~3 words)
+- Areas for improvement as areaImprovement (~3 words)
+- Overall feedback as feedback(1-2 lines)
 Be direct and concise."""
 
 
@@ -35,9 +35,11 @@ def generate_openai_response(user_message: str, session_id: str):
             model="gpt-5-mini",  # Fixed model name
             messages=conversations[session_id]
         )
+       
         
         
         assistant_message = response.choices[0].message.content
+        print("Response from openAI client ---", assistant_message)
         
         conversations[session_id].append({
             "role": "assistant",
