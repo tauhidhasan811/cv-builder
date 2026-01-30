@@ -35,9 +35,11 @@ def generate_openai_response(user_message: str, session_id: str):
             model="gpt-5-mini",  # Fixed model name
             messages=conversations[session_id]
         )
+       
         
         
         assistant_message = response.choices[0].message.content
+        print("Response from openAI client ---", assistant_message)
         
         conversations[session_id].append({
             "role": "assistant",
