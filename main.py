@@ -252,7 +252,7 @@ def ai_written_presentation(written_submission = Form()):
         prompt = Written_presentation_prompt(case_study,instructions,pro_tips,written_submission)
         comp_rate = completion_rate(written_submission)
         words_count = word_count(written_submission)
-        response = model.invoke(prompt)
+        response = fixedModel.invoke(prompt)
         parsed_response = json.loads(response.content)
 
         content_score = parsed_response.get('contentScore')
@@ -325,7 +325,7 @@ def in_tray_email_assessment(reply_raft = Form()):
     try:
         instructions = generate_in_tray_email_task().get('instructions')
         prompt = in_tray_email_prompt(instructions, reply_raft)
-        response = model.invoke(prompt)
+        response = fixedModel.invoke(prompt)
         parsed_response = json.loads(response.content)
 
         message = JSONResponse(
@@ -396,7 +396,7 @@ def case_law_summary(your_summary = Form()):
             pretend_case=pretend_case,
             your_summary=your_summary
         )
-        response = model.invoke(prompt)
+        response = fixedModel.invoke(prompt)
         parsed_response = json.loads(response.content)
 
         message = JSONResponse(
@@ -509,7 +509,7 @@ async def check(data: CheckRequest):
         prompt = psycho_test_prompt(psycho_data)
         
         # Invoke model with formatted prompt
-        response = model.invoke(prompt)
+        response = fixedModel.invoke(prompt)
         parsed_response = json.loads(response.content)
 
         clear_session(session_id)
@@ -546,7 +546,10 @@ async def check_mock_answer(segment = Form(),
         
         
         prompt = MockQuesPrompt(segment_name=segment, num_of_question=n_question)
-        message = model.invoke(prompt).content
+        message = dynamicModel.invoke(prompt).content
+        print('x' * 100)
+        print(dynamicModel.temperature)
+        print('x' * 100)
         message = CleanData(message)
 
         response = JSONResponse(
@@ -595,7 +598,10 @@ async def check_mock_answer(question = Form(),
         
         prompt = MokeEvaluatePrompt(segment=segment, question=question,
                                     answer=answer_text)
-        message = model.invoke(prompt).content
+        message = fixedModel.invoke(prompt).content
+        print('x' * 100)
+        print(fixedModel.temperature)
+        print('x' * 100)
         message = CleanData(message)
 
         response = JSONResponse(

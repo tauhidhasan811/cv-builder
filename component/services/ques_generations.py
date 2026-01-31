@@ -4,8 +4,11 @@ import json
 from component.services.written_presentation import written_presentation_ques_generator
 from component.services.in_tray_email import in_tray_email_ques_generator
 from component.services.case_law_summary import generate_case_law_summary_question
-model = LoadGPT()
+model = LoadGPT(temp=1)
 
+print('=' * 100)
+print(model.temperature)
+print('=' * 100)
 
 def get_generated_questions():
     prompt = generate_question_prompt()
