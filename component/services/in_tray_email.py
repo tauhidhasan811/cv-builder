@@ -19,6 +19,7 @@ def in_tray_email_ques_generator():
             "Return JSON keys exactly as:\n"
             "- instructions (string)\n"
             "- draftEmail (string)"
+            "Important Reminder: All response text must be written in British English."
         )
     )
 
@@ -54,7 +55,7 @@ def in_tray_email_prompt(instructions, email_draft):
             "- commercialAwarness (string)"
             "- contextUnderstanding (string)"
             "- riskAssessment (string)"
-        
+            "Important Reminder: All response text must be written in British English."
         )
     )
 

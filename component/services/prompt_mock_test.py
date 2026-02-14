@@ -152,6 +152,8 @@ def MokeEvaluatePrompt(segment, question, answer):
             "areas_for_improvement": "one areas for improvement"
         }}
         }}
+
+        "Important Reminder: All response text must be written in British English."
         """
     
     return prompt

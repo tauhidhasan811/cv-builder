@@ -78,6 +78,7 @@ def generate_question_prompt():
             "",
             "Do NOT add explanations, headings, or extra fields.",
             "Return JSON only."
+            "Important Reminder: All response text must be written in British English."
         ])
     )
 
@@ -121,6 +122,7 @@ def WTprompt(role_context, case_briefing, written_submission):
 
             "Do NOT calculate word count, grades, completion rate, or academic scores.\n"
             "Return JSON only. No markdown. No explanations outside JSON."
+            "Important Reminder: All response text must be written in British English."
         )
     )
 

@@ -241,7 +241,7 @@ if __name__ == "__main__":
 
 """
 
-from bs4 import BeautifulSoup
+"""from bs4 import BeautifulSoup
 import requests
 
 
@@ -250,7 +250,7 @@ header = {
 }
 url = 'https://www.findapprenticeship.service.gov.uk/apprenticeship/VAC2000001961'
 
-
+"""
 
 
 #class_text = text.find('p', 'govuk-hint')
@@ -270,7 +270,7 @@ for p in all:
 #print(text.find('p'))
 
 
-from component.core.job_scrape import scrape_apprenticeship
+"""from component.core.job_scrape import scrape_apprenticeship
 
 print('x' * 100)
 print('Scraping apprenticeship details...')
@@ -278,4 +278,16 @@ print('x' * 100)
 
 data = scrape_apprenticeship(url)
 print(data)
+"""
+
+from dotenv import load_dotenv
+from component.config.openai_model import LoadGPT
+
+
+load_dotenv()
+model = LoadGPT()
+
+res = model.invoke('hi')
+
+print(res)
 
