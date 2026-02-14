@@ -25,6 +25,7 @@ def written_presentation_ques_generator():
             "- caseStudy (string)"
             "- instructions (array of strings)"
             "- proTips (array of strings)"
+            'Important Reminder: All response text and spellings must be written in British English .'
         )
     )
 
@@ -64,6 +65,7 @@ def Written_presentation_prompt(case_study, instructions, pro_tips, written_subm
             "- contentScore (integer 0–100)\n"
             "- feedback (string with specific strengths and areas for improvement)\n"
             "Return valid JSON only, no additional text."
+            'Important Reminder: All response text and spellings must be written in British English .'
         )
     )
 

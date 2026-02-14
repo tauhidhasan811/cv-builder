@@ -53,7 +53,7 @@ def case_law_summary_prompt(precedent_summary, pretend_case, your_summary):
             "- ability to link precedent summary to a new case as as 'caseLinking' (string)"
             "- quality of their summary as 'summaryQuality' (string)"
             "Return valid JSON only."
-            "Important Reminder: All response text must be written in British English."
+            "Important Reminder: All response text and spellings must be written in British English ."
         )
     )
 

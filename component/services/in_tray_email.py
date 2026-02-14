@@ -55,7 +55,7 @@ def in_tray_email_prompt(instructions, email_draft):
             "- commercialAwarness (string)"
             "- contextUnderstanding (string)"
             "- riskAssessment (string)"
-            "Important Reminder: All response text must be written in British English."
+            "Important Reminder: All response text and spellings must be written in British English ."
         )
     )
 

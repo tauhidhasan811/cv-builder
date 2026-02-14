@@ -11,7 +11,7 @@ def JobRecommondationPrompt(cv_data):
             "Based on the provided CV data, recommend suitable five job rols name only that align with the candidate's skills and experience. "
             "Return the output strictly in the following dictionary format and include only five job titles:\n"
             f"{temp}"
-            "Important Reminder: All response text must be written in British English."
+            "Important Reminder: All response text and spellings must be written in British English ."
         )
     )
 

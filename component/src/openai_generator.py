@@ -13,7 +13,7 @@ SYSTEM_PROMPT = """Rewrite psychometric insights into concise natural language:
 - Areas for improvement as areaImprovement (~3 words)
 - Overall feedback as feedback(1-2 lines)
 Be direct and concise.
-Important Reminder: All response text must be written in British English."""
+Important Reminder: All response text and spellings must be written in British English ."""
 
 
 def generate_openai_response(user_message: str, session_id: str):

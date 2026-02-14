@@ -30,7 +30,7 @@ def CLPrompt(user_data, job_desc):
         "- Each paragraph must be a single string.\n"
         "- Do NOT include newline characters inside paragraph strings.\n"
 
-        "Important Reminder: All response text must be written in British English."
+        "Important Reminder: All response text and spellings must be written in British English ."
     )
 )
 

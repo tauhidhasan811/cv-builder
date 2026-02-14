@@ -18,7 +18,7 @@ def psycho_test_prompt(raw_insights):
             '  "areaImprovement": "5–7 words",\n'
             '  "feedback": "1–2 short lines"\n'
             "}"
-            "Important Reminder: All response text must be written in British English."
+            "Important Reminder: All response text and spellings must be written in British English ."
         )
     )
     # hum_message = f"Psychometric insights to rewrite:\n{raw_insights}"

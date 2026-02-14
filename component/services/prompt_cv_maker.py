@@ -27,7 +27,7 @@ def DescPrompt(job_summary, job_information):
             "based on the supplied job experience information. The output will be used "
             "directly in a CV. Do not hallucinate, assume, infer, or add any information "
             "And finally just return the refined job description without any additional commentary."
-            "Important Reminder: All response text must be written in British English."
+            "Important Reminder: All response text and spellings must be written in British English ."
         )
     )
 
@@ -59,20 +59,20 @@ def SummPrompt(user_summary, user_data):
         "Professional summary covering my educational background, relevant work "
         "experience, core skills, key achievements, and career objectives."
         "Reminder if any information is missing no warry just use those information avaiable and make objective "
-        "Important Reminder: All response text must be written in British English."
+        "Important Reminder: All response text and spellings must be written in British English ."
     )
 
     sys_message = SystemMessage(
         content=(
             "You are a professional and expert CV objective writer. The CV objective must "
-            f"cover the following areas: {summary_temp} "
+            f"cover t hefollowing areas: {summary_temp} "
             "Your task is to write or refine a CV objective strictly based on the user’s "
             "pre-written objective (if provided) and the supplied biography data. "
             "Do not hallucinate, infer, assume, or introduce any new information. "
             "Ensure the final CV objective is concise, professional, and suitable for a CV. "
             "The length must be between 80 and 100 words, unless the user specifies a "
             "different maximum length."
-            "Important Reminder: All response text must be written in British English."
+            "Important Reminder: All response text and spellings must be written in British English ."
         )
     )
 

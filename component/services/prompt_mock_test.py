@@ -105,6 +105,7 @@ def MockQuesPrompt(segment_name, num_of_question):
             f"All questions must be strictly relevant to this {segment_name}"
             "Return the result as a valid JSON array of objects, with exactly the following format and using **double quotes**:\n"
             f"{out_temp}\n"
+            'Important Reminder: All response text and spellings must be written in British English .'
         )
     )
 
@@ -153,7 +154,7 @@ def MokeEvaluatePrompt(segment, question, answer):
         }}
         }}
 
-        "Important Reminder: All response text must be written in British English."
+        "Important Reminder: All response text and spellings must be written in British English ."
         """
     
     return prompt
