@@ -101,6 +101,7 @@ def MockQuesPrompt(segment_name, num_of_question):
     sys_message = SystemMessage(
         content=(
             f"You are an examiner creating a mock test in the '{segment_name}' segment. "
+            f"Your questions should be general and suitable for people from all domains, covering all university departments."
             f"Generate exactly {num_of_question} questions "
             f"All questions must be strictly relevant to this {segment_name}"
             "Return the result as a valid JSON array of objects, with exactly the following format and using **double quotes**:\n"
