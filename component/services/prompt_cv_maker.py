@@ -96,3 +96,24 @@ def SummPrompt(user_summary, user_data):
     ).text
 
     return prompt
+
+
+def CVComplication(cv_data):
+    sys_message = SystemMessage(
+        content="Imagine you are a professional CV Analyzer. "
+        "Your task is to give a complition score range between (35 to 96)"
+        "return just score(integer) no text only score. "
+        )
+    hum_message = HumanMessage(content=f"User Bio: \n{cv_data}")
+
+    temp = PromptTemplate(
+        template="{sys_message}\n. {hum_message} \n",
+        input_variables=['sys_message', 'hum_message']
+    )
+
+    prompt = temp.invoke(input={
+         'sys_message': sys_message.content,
+         'hum_message': hum_message.content
+    })
+
+    return prompt.text

@@ -29,7 +29,7 @@ from component.services.get_psycho_data import get_psycho_data
 from component.services.psycho_prompt import psycho_test_prompt
 from component.services.prompt_coverletter import CLPrompt
 from component.services.prompt_mock_test import MockQuesPrompt#, MockAnsPrompt
-from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt
+from component.services.prompt_cv_maker import CVPrompt, DescPrompt, SummPrompt, CVComplication
 from component.services.written_test import WTprompt, overall_grade, word_count, completion_rate
 from component.services.written_presentation import Written_presentation_prompt
 
@@ -120,7 +120,7 @@ async def generate_cl(job_desc = Form(),
     
 
 @app.post('/api/generate_ai_assessment/')
-def generate_ai_assessment():
+async def generate_ai_assessment():
     try:
         parsed_response = get_generated_questions()
         message = JSONResponse(
@@ -242,8 +242,23 @@ def generate_written_presentation_task():
 
 #endpoint for written presentation evaluation
 @app.post('/api/written_presentation_result/')
-def ai_written_presentation(written_submission = Form()):
+async def ai_written_presentation(video: UploadFile = File()):
     try:
+
+        with tempfile.TemporaryDirectory() as dir:
+            f_name = video.filename
+            a_f_name = f_name.split('.')[0] +'.mp3'
+            path = os.path.join(dir, f_name)
+
+            with open(path, 'wb') as file:
+                file.write(await video.read())
+            print(path)
+
+            aud_pth = os.path.join(dir, a_f_name)
+            response = ExtractAudio(path, aud_pth)
+            written_submission = await asyncio.to_thread(audio_model.ConvertToText, aud_pth)
+
+
         questions_data = get_presentation_questions()
         case_study = questions_data.get('caseStudy')
         instructions = questions_data.get('instructions')
@@ -289,7 +304,6 @@ def ai_written_presentation(written_submission = Form()):
         )
         return message
     
-
 
 @app.post('/api/generate_email_task/')
 def generate_email_task():
@@ -460,14 +474,17 @@ async def enhance_summary(user_summary = Form(),
                           user_data = Form()):
     try:
         prompt = SummPrompt(user_summary=user_summary, user_data=user_data)
-        print(prompt)
+        com_prompt = CVComplication(cv_data=user_data)
+        #print(prompt)
+        score = fixedModel.invoke(com_prompt)
         response = model.invoke(prompt)
         message = JSONResponse(
             status_code=200,
             content={
                 'status': True,
                 'statuscode': 200,
-                'text': response.content
+                'text': response.content,
+                'score': score.content
             }
         )
         return message
@@ -477,7 +494,8 @@ async def enhance_summary(user_summary = Form(),
             content={
                 'status': False,
                 'statuscode': 500,
-                'text': str(ex)
+                'text': str(ex),
+                'score': -1
             }
         )
         return message
