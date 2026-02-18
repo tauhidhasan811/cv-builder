@@ -93,30 +93,39 @@ uvicorn
 
 ## How to Run
 
-1. Make sure you are in the base directory of the project (where `main.py` is located).
+1. Clone the Repository
+```bash
+git clone https://github.com/tauhidhasan811/cv-builder.git
+cd cv-builder
 
-2. Activate your virtual environment:
+```
+2. Make sure you are in the base directory of the project (where `main.py` is located).
+
+3. Activate your virtual environment:
    - Windows: `venv\Scripts\activate`
    - Unix/MacOS: `source venv/bin/activate`
 
-3. Install dependencies:
+4. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Start the FastAPI server using Uvicorn:
+5. Start the FastAPI server using Uvicorn:
    ```bash
-   uvicorn main:app --host 0.0.0.0 --port 8000
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
    ```
 
-5. The application will be accessible at:
+6. The application will be accessible at:
    ```
-   http://your-server-ip:8000
+   http://127.0.0.1:8000
+   
    ```
 
-6. For interactive API documentation, visit:
+7. For interactive API documentation, visit:
    ```
-   http://your-server-ip:8000/docs
+   http://127.0.0.1:8000/docs
+   
    ```
 
 ## License
