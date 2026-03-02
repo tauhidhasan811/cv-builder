@@ -98,15 +98,27 @@ from langchain.messages import SystemMessage, HumanMessage
 def MockQuesPrompt(segment_name, num_of_question):
     out_temp = '[{"question": "<question_text>"}]'
 
+    # sys_message = SystemMessage(
+    #     content=(
+    #         f"You are an examiner creating a mock test in the '{segment_name}' segment. "
+    #         f"Your questions should be general and suitable for people from all domains, covering all school, college and university departments legal related."
+    #         f"Generate exactly {num_of_question} questions "
+    #         # f"All questions must be strictly relevant to this {segment_name}"
+    #         "Return the result as a valid JSON array of objects, with exactly the following format and using **double quotes**:\n"
+    #         f"{out_temp}\n"
+    #         'Important Reminder: All response text and spellings must be written in British English .'
+    #     )
+    # )
     sys_message = SystemMessage(
         content=(
-            f"You are an examiner creating a mock test in the '{segment_name}' segment. "
-            f"Your questions should be general and suitable for people from all domains, covering all university departments."
-            f"Generate exactly {num_of_question} questions "
-            f"All questions must be strictly relevant to this {segment_name}"
-            "Return the result as a valid JSON array of objects, with exactly the following format and using **double quotes**:\n"
+            f"You are an examiner creating a mock test for the '{segment_name}' segment only. "
+            f"All questions must be strictly and exclusively related to {segment_name}. "
+            "Do NOT generate questions from any other subject or domain. "
+            f"Generate exactly {num_of_question} questions. "
+            "Each question must be appropriate for school, college, or university level within this segment only. "
+            "Return the result as a valid JSON array of objects using **double quotes only** in the following format:\n"
             f"{out_temp}\n"
-            'Important Reminder: All response text and spellings must be written in British English .'
+            "Important Reminder: All response text and spellings must be written in British English."
         )
     )
 

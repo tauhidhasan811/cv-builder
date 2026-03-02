@@ -556,7 +556,6 @@ async def check(data: CheckRequest):
         )
     
 
-
 @app.post("/api/mock-question/")
 async def check_mock_answer(segment = Form(),
                             n_question = Form()):
