@@ -558,11 +558,12 @@ async def check(data: CheckRequest):
 
 @app.post("/api/mock-question/")
 async def check_mock_answer(segment = Form(),
+                            year_group = Form(),
                             n_question = Form()):
     try:
         
         
-        prompt = MockQuesPrompt(segment_name=segment, num_of_question=n_question)
+        prompt = MockQuesPrompt(segment_name=segment, class_group=year_group, num_of_question=n_question)
         message = dynamicModel.invoke(prompt).content
         print('x' * 100)
         print(dynamicModel.temperature)

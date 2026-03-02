@@ -94,8 +94,13 @@ from langchain.messages import SystemMessage, HumanMessage
     return prompt.text """
 
 
-
-def MockQuesPrompt(segment_name, num_of_question):
+additiona_info = {
+    'Behavioural Interview': 'Practise reflecting on real experiences and demonstrate skills like teamwork, adaptability, and leadership.',
+    'Motivational Interview': 'Test your motivation and passion for law through tailored interview questions.',
+    'Technical Interview': 'Test your legal knowledge and commercial awareness with realistic, firm-style interview questions.',
+    'Situational Interview': 'Respond to real workplace scenarios and show sound judgement, professionalism, and problem-solving.',
+}
+def MockQuesPrompt(segment_name,class_group,  num_of_question):
     out_temp = '[{"question": "<question_text>"}]'
 
     # sys_message = SystemMessage(
@@ -111,14 +116,18 @@ def MockQuesPrompt(segment_name, num_of_question):
     # )
     sys_message = SystemMessage(
         content=(
-            f"You are an examiner creating a mock test for the '{segment_name}' segment only. "
-            f"All questions must be strictly and exclusively related to {segment_name}. "
-            "Do NOT generate questions from any other subject or domain. "
-            f"Generate exactly {num_of_question} questions. "
-            "Each question must be appropriate for school, college, or university level within this segment only. "
-            "Return the result as a valid JSON array of objects using **double quotes only** in the following format:\n"
+            f"You are an examiner creating a mock interview based on the title or segment '{segment_name}'. "
+            f"Additional inforation: {additiona_info.get(segment_name, additiona_info)}"
+            "Generate questions that are directly relevant to this specific segment or mock interview title. "
+            "Questions may belong to any appropriate subject or domain depending on the segment provided. "
+            "Do NOT assume the segment is related to Computer Science unless explicitly stated in the title. "
+            f"Each question must be suitable for Class group {class_group}. "
+            "Questions should encourage clear, spoken, descriptive answers suitable for a video response. "
+            "Avoid coding problems, mathematical calculations, or overly technical written tasks unless clearly required by the segment title. "
+            f"Generate exactly {num_of_question} questions — no more and no fewer. "
+            "Return the result as a valid JSON array of objects using double quotes only in the following format:\n"
             f"{out_temp}\n"
-            "Important Reminder: All response text and spellings must be written in British English."
+            "All response text and spellings must be written in British English."
         )
     )
 

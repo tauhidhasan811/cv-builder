@@ -83,7 +83,7 @@ def scrape_all(BASE_URL, START_URL, HEADERS):
     count = 0
     while url:
         count += 1
-        if count > 5:
+        if count > 15:
             break
         print(f"Scraping: {url}")
         r = requests.get(url, headers=HEADERS, timeout=30)
