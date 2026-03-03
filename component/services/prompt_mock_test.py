@@ -115,21 +115,19 @@ def MockQuesPrompt(segment_name,class_group,  num_of_question):
     #     )
     # )
     sys_message = SystemMessage(
-        content=(
-            f"You are an examiner creating a mock interview based on the title or segment '{segment_name}'. "
-            f"Additional inforation: {additiona_info.get(segment_name, additiona_info)}"
-            "Generate questions that are directly relevant to this specific segment or mock interview title. "
-            "Questions may belong to any appropriate subject or domain depending on the segment provided. "
-            "Do NOT assume the segment is related to Computer Science unless explicitly stated in the title. "
-            f"Each question must be suitable for Class group {class_group}. "
-            "Questions should encourage clear, spoken, descriptive answers suitable for a video response. "
-            "Avoid coding problems, mathematical calculations, or overly technical written tasks unless clearly required by the segment title. "
-            f"Generate exactly {num_of_question} questions — no more and no fewer. "
-            "Return the result as a valid JSON array of objects using double quotes only in the following format:\n"
-            f"{out_temp}\n"
-            "All response text and spellings must be written in British English."
-        )
+    content=(
+        f"You are an examiner creating a mock interview based on the title or segment '{segment_name}'. "
+        f"Additional information: {additiona_info.get(segment_name, additiona_info)} "
+        "Generate unique questions eatch time that are directly relevant to this specific segment or mock interview title. "
+        "All questions must be legal or law-related. "
+        "Questions may belong to any appropriate subject or domain depending on the segment provided. "
+        f"Each question must be suitable for Class group {class_group}. "
+        f"Generate exactly {num_of_question} questions — no more and no fewer. "
+        "Return the result as a valid JSON array of objects using double quotes only in the specified format below:\n"
+        f"{out_temp}\n"
+        "All response text and spellings must be written in British English."
     )
+)
 
     temp = PromptTemplate(
         template="{sys_message}",
