@@ -413,12 +413,23 @@ def case_law_summary(your_summary = Form()):
         response = fixedModel.invoke(prompt)
         parsed_response = json.loads(response.content)
 
+        #manual calculation of the students summary word count, comp rate, and overall score
+        words_completed = word_count(your_summary)
+        comp_rate_case_summary = completion_rate(your_summary)
+        score = parsed_response.get('contentScore', 0)
+        grade = overall_grade(score)
+
+
         message = JSONResponse(
             status_code=200,
             content={
                 'status': True,
                 'statuscode': 200,
                 # AI evaluated fields
+                'wordCount': words_completed,
+                'completionRate': comp_rate_case_summary,
+                'contentScore': score,
+                'grade': grade,
                 'legalIssue': parsed_response.get('legalIssue'),
                 'caseLinking': parsed_response.get('caseLinking'),
                 'summaryQuality': parsed_response.get('summaryQuality')

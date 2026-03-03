@@ -41,20 +41,27 @@ def generate_case_law_summary_question():
 
 def case_law_summary_prompt(precedent_summary, pretend_case, your_summary):
     sys_message = SystemMessage(
-        content=(
-            "You are a professional legal case law summary evaluator."
-            "Evaluate the quality of the case law summary ONLY in terms of:"
-            "- Accuracy in reflecting the precedent summary"
-            "- Relevance to the pretend case"
-            "- Clarity and conciseness"
+       content=(
+    "You are a professional legal case law summary evaluator. "
 
-            "Return a JSON object with:"
-            "- identification of the legal issue as 'legalIssue' (string)"
-            "- ability to link precedent summary to a new case as as 'caseLinking' (string)"
-            "- quality of their summary as 'summaryQuality' (string)"
-            "Return valid JSON only."
-            "Important Reminder: All response text and spellings must be written in British English ."
-        )
+    "Evaluate the student's summary ONLY in terms of: "
+    "1. Accuracy in reflecting the precedent summary. "
+    "2. Relevance to the pretend case. "
+    "3. Clarity and conciseness. "
+
+    "Return a VALID JSON object with EXACTLY the following fields: "
+    "{ "
+     "- contentScore:integer from 0 to 100\n"
+    "\"legalIssue\": string, "
+    "\"caseLinking\": string, "
+    "\"summaryQuality\": array of EXACTLY 4 strings "
+    "} "
+
+    "The 'summaryQuality' field must contain concise evaluation points. "
+    "Do not return markdown. Do not add extra fields. "
+
+    "Important Reminder: All response text and spellings must be written in British English."
+)
     )
 
     hum_message = HumanMessage(
