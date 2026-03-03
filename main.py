@@ -399,11 +399,13 @@ def case_summary_generation():
         return message
 
 @app.post("/api/case_law_summary/")
-def case_law_summary(your_summary = Form()):
+def case_law_summary(precedent_summary = Form(),
+                    pretend_case = Form(),
+                    your_summary = Form()):
     try:
-        questions_data = generate_case_law_summary_questions()
-        precedent_summary = questions_data.get('precedentSummary')
-        pretend_case = questions_data.get('pretendCase')
+        # questions_data = generate_case_law_summary_question()
+        # precedent_summary = questions_data.get('precedentSummary')
+        # pretend_case = questions_data.get('pretendCase')
 
         prompt = case_law_summary_prompt(
             precedent_summary=precedent_summary,
