@@ -759,6 +759,7 @@ async def find_jobs(file: UploadFile = File()):
             }
         )
         return response
+ 
     
 
 @app.post('/api/get-jobinfo/')
