@@ -29,11 +29,11 @@ def completion_rate(text):
 def overall_grade(score):
     if score >= 85:
         return "A"  
-    elif score >= 70:
+    elif score >= 70 and score < 85:
         return "B"  
-    elif score >= 50:
+    elif score >= 50 and score < 70:
         return "C"  
-    elif score >= 35:
+    elif score >= 35 and score < 50:
         return "D"  
     else:
         return "F"  
