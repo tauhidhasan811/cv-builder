@@ -162,7 +162,7 @@ def ai_written_test(written_submission = Form()):
         com_rate = completion_rate(written_submission)
 
         prompt = WTprompt(role_context, case_study, written_submission)
-        response = model.invoke(prompt)
+        response = fixedModel.invoke(prompt)
         parsed_response = json.loads(response.content)
 
         content_score = parsed_response.get("contentScore")
@@ -410,7 +410,7 @@ def case_law_summary(your_summary = Form()):
             pretend_case=pretend_case,
             your_summary=your_summary
         )
-        response = fixedModel.invoke(prompt)
+        response =  fixedModel.invoke(prompt)
         parsed_response = json.loads(response.content)
 
         #manual calculation of the students summary word count, comp rate, and overall score
