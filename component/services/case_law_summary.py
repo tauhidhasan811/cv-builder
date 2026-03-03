@@ -83,5 +83,8 @@ def case_law_summary_prompt(precedent_summary, pretend_case, your_summary):
             "hum_message": hum_message.content
         }
     )
+    # print("Precendent Summary:", precedent_summary)
+    # print("Pretend Case:", pretend_case)
+    # print("Your Summary:", your_summary)
 
     return final_prompt.text
