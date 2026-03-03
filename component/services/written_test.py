@@ -7,9 +7,9 @@ def word_count(text):
     return text_len
 
 COMP_RATE = {
-    "min_words": 120,
-    "ideal_words": 260,
-    "max_words": 300
+    "min_words": 80,
+    "ideal_words": 180,
+    "max_words": 200
 }
 
 def completion_rate(text):
