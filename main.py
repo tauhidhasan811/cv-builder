@@ -335,22 +335,35 @@ def generate_email_task():
 
 
 @app.post('/api/in_tray_email/')
-def in_tray_email_assessment(reply_raft = Form()):
+def in_tray_email_assessment(
+    draftEmail = Form(),
+    instructions = Form(),
+    answer_email = Form()):
+
     try:
-        instructions = generate_in_tray_email_task().get('instructions')
-        prompt = in_tray_email_prompt(instructions, reply_raft)
+        prompt = in_tray_email_prompt(instructions,draftEmail, answer_email)
         response = fixedModel.invoke(prompt)
         parsed_response = json.loads(response.content)
+
+        email_word_count = word_count(answer_email)
+        email_completion_rate = completion_rate(answer_email)
+        email_score = parsed_response.get('contentScore', 0)
+        email_grade = overall_grade(email_score)
+
 
         message = JSONResponse(
             status_code=200,
             content={
                 'status': True,
                 'statuscode': 200,
+                'wordCount': email_word_count,
+                'completionRate': email_completion_rate,
+                'overallGrade': email_grade,
+                
                 #AI evaluated fields
                 'prioritization': parsed_response.get('prioritization'),
                 'judgment': parsed_response.get('judgment'),
-                'commercialAwarness': parsed_response.get('commercialAwarness'),
+                'commercialAwareness': parsed_response.get('commercialAwareness'),
                 'contextUnderstanding': parsed_response.get('contextUnderstanding'),
                 'riskAssessment': parsed_response.get('riskAssessment')
             }
