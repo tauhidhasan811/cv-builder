@@ -75,7 +75,7 @@ def in_tray_email_prompt(instructions, draft_email, answer_email):
     hum_message = HumanMessage(
         content=(
             f"Task Instructions:\n{instructions}\n\n"
-            f"Original Draft Email:\n{draft_email}\n\n"        # ✅ now included
+            f"Original Draft Email:\n{draft_email}\n\n"        
             f"Candidate's Reply Email:\n{answer_email}"
         )
     )
