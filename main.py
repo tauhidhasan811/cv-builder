@@ -416,9 +416,6 @@ def case_law_summary(precedent_summary = Form(),
                     pretend_case = Form(),
                     your_summary = Form()):
     try:
-        # questions_data = generate_case_law_summary_question()
-        # precedent_summary = questions_data.get('precedentSummary')
-        # pretend_case = questions_data.get('pretendCase')
 
         prompt = case_law_summary_prompt(
             precedent_summary=precedent_summary,
