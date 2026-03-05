@@ -1,28 +1,38 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_core.messages import SystemMessage, HumanMessage
-
+import random 
+from component.services.constants import PRECEDENT_CASES
 def generate_case_law_summary_question():
+    precedent, legal_area, industry = random.choice(PRECEDENT_CASES)
     sys_message = SystemMessage(
         content=(
             "You are an AI legal assessment content generator creating case law summary tasks "
-            "for law students or early-career legal professionals. Generate a realistic case law summary "
-            "scenario based on a real-world legal context.\n\n"
+            "for law students or early-career legal professionals.\n\n"
+            f"This task MUST be based on the legal area: {legal_area}\n"
+            f"The precedent case MUST be: {precedent}\n"
+            f"The pretendCase MUST be set in the {industry} industry.\n\n"
             "The output MUST include:\n"
-            "1. precedentSummary: a summary of a relevant legal precedent\n"
-            "2. pretendCase: a new legal case that the candidate must relate to the precedent\n\n"
+            "1. precedentSummary: an accurate and detailed summary of the specified precedent case\n"
+            "2. pretendCase: a brand new fictional case the candidate must relate to the precedent. "
+            "The fictional case must involve completely different parties, facts, and context "
+            "from the precedent — do not mirror the original facts too closely.\n\n"
             "Rules:\n"
             "- Do NOT provide the candidate's solution or response\n"
             "- The task should require at least 200 words to answer\n"
             "- Keep the scenario realistic and mid-complexity\n"
+            "- The pretendCase must feel genuinely distinct from the precedent facts\n"
             "- Return valid JSON only\n\n"
             "Return JSON keys exactly as:\n"
             "- precedentSummary (string)\n"
-            "- pretendCase (string)"
+            "- pretendCase (string)\n\n"
             "Important Reminder: All response text must be written in British English."
         )
     )
     hum_message = HumanMessage(
-        content="Generate a case law summary task."
+        content=(
+            f"Generate a case law summary task for {legal_area} "
+            f"using {precedent}, set in the {industry} industry."
+        )
     )
     prompt_temp = PromptTemplate(
         template="{sys_message}\n\n{hum_message}",

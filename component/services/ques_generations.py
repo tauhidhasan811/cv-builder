@@ -10,6 +10,7 @@ print('=' * 100)
 print(model.temperature)
 print('=' * 100)
 
+
 def get_generated_questions():
     prompt = generate_question_prompt()
     response = model.invoke(prompt)
