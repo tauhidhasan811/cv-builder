@@ -242,7 +242,10 @@ def generate_written_presentation_task():
 
 #endpoint for written presentation evaluation
 @app.post('/api/written_presentation_result/')
-async def ai_written_presentation(video: UploadFile = File()):
+async def ai_written_presentation(video: UploadFile = File(),
+                                  task = Form(),
+                                  instructions = Form(),
+                                  pro_tips = Form()):
     try:
 
         with tempfile.TemporaryDirectory() as dir:
@@ -258,15 +261,9 @@ async def ai_written_presentation(video: UploadFile = File()):
             response = ExtractAudio(path, aud_pth)
             written_submission = await asyncio.to_thread(audio_model.ConvertToText, aud_pth)
 
-
-        questions_data = get_presentation_questions()
-        case_study = questions_data.get('caseStudy')
-        instructions = questions_data.get('instructions')
-        pro_tips = questions_data.get('proTips')
-
-        prompt = Written_presentation_prompt(case_study,instructions,pro_tips,written_submission)
+        prompt = Written_presentation_prompt(task,instructions,pro_tips,written_submission)
         comp_rate = completion_rate(written_submission)
-        words_count = word_count(written_submission)
+        # words_count = word_count(written_submission)
         response = fixedModel.invoke(prompt)
         parsed_response = json.loads(response.content)
 
@@ -284,7 +281,7 @@ async def ai_written_presentation(video: UploadFile = File()):
                 'status': True,
                 'statusCode': 200,
                 #my calculated fields
-                'wordCount': words_count,
+                
                 'completionRate': comp_rate,
                 'OverallGrade': overall_grade(composite_score),
 
