@@ -176,7 +176,7 @@ def MokeEvaluatePrompt(segment, question, answer):
                 secound: if secound none then give 0 (int)
                 text: Great opening hook comment (str)
             }},
-            "filler_words": failed like The candidate did not provide any substantive answer or examples, and failed to address the different,
+            "filler_words": Based on the question just give failed like The candidate did not provide any substantive answer or examples, and failed to address the different,
             "stronger_answer" : Example of a Stronger Answer
         }}
         "feedback": {{
